@@ -1,0 +1,31 @@
+name: Protect tests
+
+# tests/ is owned by QA. A Dev branch (feat/<story>-<dev>) must make QA's tests
+# pass by changing code, so a pull request from one may not change anything in tests/.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  protect-tests:
+    if: startsWith(github.head_ref, 'feat/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reject changes to tests/ from a Dev branch
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA...$HEAD_SHA" -- tests/)"
+          if [ -n "$changed" ]; then
+            echo "::error::Dev branches may not change tests/. Changed files:"
+            echo "$changed"
+            exit 1
+          fi
+          echo "No changes under tests/."
