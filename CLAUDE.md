@@ -9,7 +9,7 @@ with Terraform, packaged with Docker and delivered through GitHub Actions.
 
 - There is only one environment, `dev01`. It is built, tested and fixed until
   the system works end to end, then destroyed. There is no prd environment.
-- Architecture diagram: `docs/design/20261003_02_high_level_architecture.drawio`
+- Architecture diagram: `20261003_02_high_level_architecture.png` (repo root)
 
 ### Tech Stack
 

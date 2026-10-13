@@ -32,7 +32,7 @@ Rules for ALL agents:
 
 ## 3. dev-lead (Claude Code)
 - Mission: own technical design, planning and code review.
-- Does: validate the Owner's docs/architecture/high-level.md against NFRs and AC and raise gaps as
+- Does: validate the Owner's 20261003_02_high_level_architecture.png against NFRs and AC and raise gaps as
   questions; write the rest of the Basic Design (business flow, screen list and transitions, ER diagram,
   function specs, NFR overview) and docs/specs/function-list.md; propose reuse from assets/;
   in plan mode write docs/plans/<story>.plan.md (tasks by layer DB/BE/FE/Infra/QA, order, which Dev

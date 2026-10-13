@@ -20,7 +20,7 @@ You write documents: specs, plans, reviews. The Devs (Codex) write the code. Kee
 
 ### Basic Design (gate G2)
 
-1. Read `docs/architecture/high-level.md`, the intent, and the acceptance criteria and NFR sections of the spec.
+1. Read `20261003_02_high_level_architecture.png`, the intent, and the acceptance criteria and NFR sections of the spec.
 2. Check the architecture against every NFR and acceptance criterion. Write each gap or contradiction as a numbered question for the Owner. Do not resolve them by changing the architecture yourself; it is the Owner's input.
 3. Write the rest of the Basic Design in `docs/specs/spec-<NNN>.md`: business flow, screen list (ID, title, function) and screen transitions, ER diagram (logical), functional specification (function ID, input, processing, output), NFR overview.
 4. Write `docs/specs/function-list.md`.

@@ -108,7 +108,7 @@ The steps below are a 9-step initiation process adapted for a personal project (
 | Step | What to do | Who | Artifact | Gate |
 | --- | --- | --- | --- | --- |
 | 1 | Receive the request: you describe the simple requirement; the PO writes `intent.md` (problem, desired outcome, users, constraints, open questions). State personal-data security requirements explicitly (see section 8) | PO (D), you (A) | `docs/intent/intent-001.md` | |
-| 2 | Minimal infrastructure: Git repo, a single DEV environment, a CI pipeline (build, test, lint) and automatic deploy to DEV when merged to `main`; set up the agent scaffolding (`CLAUDE.md`, `AGENTS.md`, `.claude/agents/`, hooks) | Dev Lead (D), you (A) | `.github/` or CI scripts, `.claude/`, `CLAUDE.md` v0, `AGENTS.md` v0 | |
+| 2 | Minimal infrastructure: Git repo, a single DEV environment, a CI pipeline (build, test, lint) and automatic deploy to DEV when merged to `develop`; set up the agent scaffolding (`CLAUDE.md`, `AGENTS.md`, `.claude/agents/`, hooks) | Dev Lead (D), you (A) | `.github/` or CI scripts, `.claude/`, `CLAUDE.md` v0, `AGENTS.md` v0 | |
 | 3 | Settle acceptance criteria for each requirement: testable and measurable. Example: "Add employee" must allow uploading a PDF contract, automatically create an account, send a welcome email, and respond in under 1 second | PO (D), QA (R), you (A) | "Acceptance Criteria" section of `spec.md` | **G1** |
 | 3b *(added)* | Clarify NFRs with the ISO 25010 checklist [3]: capacity, availability, security, performance, compatibility, usability, maintainability, portability. The PO asks you for the missing numbers | PO (D), you (A) | "NFR" section of `spec.md` | G1 |
 | 4 | Reuse: search the `assets/` folder (old projects, components, schemas you want to reuse), propose what to reuse and record where it came from | Dev Lead (D) | `docs/reuse-assets.md` | |
@@ -127,7 +127,7 @@ The steps below are a 9-step initiation process adapted for a personal project (
 
 ### 5.1 Division of work
 
-- **You provide:** the high-level architecture, placed in `docs/architecture/high-level.md`.
+- **You provide:** the high-level architecture, the diagram `20261003_02_high_level_architecture.png` at the repo root.
 - **The Dev Lead does:** check that architecture against the NFRs and acceptance criteria, raise gaps or contradictions as questions to you, then write the rest of the Basic Design.
 - **You approve** at gate G2.
 
@@ -194,7 +194,7 @@ At Sprint Planning, each user story is broken into technical tasks by layer. Exa
 5. **Fix rounds:** the Dev fixes issues from the review, at most 3 rounds *(proposal)*. After 3 rounds the PM/SM escalates to you.
 6. **QA runs the full test suite** and writes a report to `reports/test-report-US01.md`.
 7. **The PM/SM opens the PR** (one PR per story, one commit per task) with a summary for you.
-8. **You approve the PR (gate G5).** After merging into `main`, CI deploys to DEV automatically.
+8. **You approve the PR (gate G5).** After merging into `develop`, CI deploys to DEV automatically.
 
 ### 6.4 Running stories in parallel
 
@@ -248,8 +248,8 @@ Recording method *(proposal)*: each gate has a file `docs/gates/Gx.md` with a ch
 
 ## 9. Phase C: Release and maintenance
 
-- **Environment:** DEV only. CI runs on every PR; after you merge into `main`, the pipeline deploys to DEV automatically.
-- **A release** is a git tag on `main` after you approve G7. There is no other environment for agents to deploy to.
+- **Environment:** DEV only. CI runs on every PR; after you merge into `develop`, the pipeline deploys to DEV automatically.
+- **A release** is a git tag on `develop` after you approve G7. There is no other environment for agents to deploy to.
 - **Maintenance:** bugs or ideas that come up are written by the PO as a new `intent.md` and added to the Product Backlog. The PO prioritizes them for later sprints [1][2]. Every bug fixed comes with a new eval or test so it does not recur [2].
 - *(Optional, later)* If the project moves to a real environment, add threshold-based monitoring and gated environments, following Anthropic's playbook [2].
 
@@ -275,7 +275,7 @@ Recording method *(proposal)*: each gate has a file `docs/gates/Gx.md` with a ch
 │   ├── process/
 │   │   ├── workflow.md           # this v3, the shared source for all agents
 │   │   └── agents/dev-1.md  dev-2.md  dev-3.md
-│   ├── architecture/high-level.md  # provided by you
+├── 20261003_02_high_level_architecture.png  # high-level architecture, provided by you
 │   ├── intent/  specs/  plans/  reviews/  gates/  change-requests/  decisions/
 │   ├── backlog.md  release-plan.md  radio.md  project-plan.md  kickoff.md  reuse-assets.md
 ├── assets/                       # old docs, components, schemas for reuse
@@ -290,7 +290,7 @@ Each Claude Code agent is a Markdown file with frontmatter; only `name` and `des
 ```markdown
 ---
 name: dev-lead
-description: Dev Lead. Completes Basic Design from docs/architecture/high-level.md, writes plan.md per story, assigns work to Devs (Codex) and reviews code. Use for design, planning or review.
+description: Dev Lead. Completes Basic Design from 20261003_02_high_level_architecture.png, writes plan.md per story, assigns work to Devs (Codex) and reviews code. Use for design, planning or review.
 tools: Read, Grep, Glob, Bash, Write
 ---
 You are the Dev Lead. Follow docs/process/workflow.md.
