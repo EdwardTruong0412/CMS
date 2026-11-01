@@ -1,0 +1,17 @@
+# <type>(<scope>): <imperative summary, max 72 chars>
+#
+# Why:
+# - <reason for the change>
+#
+# What:
+# - <file or area>: <change>
+#
+# Refs: <story / intent / gate, e.g. US01, intent-001, G4>
+# Approved-by: Owner (<YYYY-MM-DD>)
+#
+# Co-Authored-By: <agent or model> <email>
+#
+# type: feat | fix | docs | test | refactor | infra | ci | chore
+# scope: api | web | infra | ci | docs | process (or a story ID)
+# Lines starting with # are ignored. No commit without Owner approval
+# (see .claude/rules/global.md, rule 3).

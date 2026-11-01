@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Tasks to G1</title>
+<style>
+:root{
+  --bg:#f6f5f1; --surface:#ffffff; --ink:#1d1d1b; --muted:#6b6a65; --line:#dedbd2; --soft:#efede6;
+  --owner:#b4461f; --pm:#2f5d8a; --po:#3d7a4a; --dl:#7a4b9a; --qa:#8a6d1f;
+  --done:#3d7a4a; --done-bg:#e6f2e8; --unc:#2f5d8a; --unc-bg:#e6eef7; --wait:#b07a00; --wait-bg:#fbf1d9; --gap:#8b8a84; --gap-bg:#efeee9;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#151513; --surface:#1f1f1c; --ink:#ecebe6; --muted:#a3a198; --line:#373631; --soft:#272622;
+    --owner:#f08a62; --pm:#7fb1e0; --po:#86c896; --dl:#c39be0; --qa:#e0c26a;
+    --done:#86c896; --done-bg:#1d2e21; --unc:#7fb1e0; --unc-bg:#1b2836; --wait:#f0b93a; --wait-bg:#33290f; --gap:#a3a198; --gap-bg:#2a2926;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#151513; --surface:#1f1f1c; --ink:#ecebe6; --muted:#a3a198; --line:#373631; --soft:#272622;
+  --owner:#f08a62; --pm:#7fb1e0; --po:#86c896; --dl:#c39be0; --qa:#e0c26a;
+  --done:#86c896; --done-bg:#1d2e21; --unc:#7fb1e0; --unc-bg:#1b2836; --wait:#f0b93a; --wait-bg:#33290f; --gap:#a3a198; --gap-bg:#2a2926;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif}
+main{max-width:1320px;margin:0 auto;padding:28px 16px 48px}
+h1{font-size:24px;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:15px;margin:28px 0 10px}
+.sub{color:var(--muted);margin:0 0 18px;max-width:860px}
+.tbtn{float:right;font:inherit;font-size:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi .v{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi .l{font-size:12px;color:var(--muted)}
+.kpi.alert{border-color:var(--wait);background:var(--wait-bg)}
+.kpi.alert .v{color:var(--wait)}
+.bar{display:flex;height:8px;border-radius:4px;overflow:hidden;margin-top:8px;background:var(--soft)}
+.bar i{display:block}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0 4px}
+.chip{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.cols{display:grid;grid-template-columns:repeat(5,minmax(220px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px}
+.col{background:var(--soft);border-radius:10px;padding:10px;min-width:220px}
+.colhead{display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px solid var(--c);padding-bottom:6px;margin-bottom:8px}
+.colhead b{font-size:14px}
+.colhead span{font-size:11px;color:var(--muted)}
+.role{font-size:11px;color:var(--muted);margin:-2px 0 8px}
+.task{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:8px;padding:8px 10px;margin-bottom:8px;position:relative}
+.task .top{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--muted);margin-bottom:3px}
+.task .num{font-weight:700;color:var(--c)}
+.task .seq{margin-left:auto;font-variant-numeric:tabular-nums}
+.task h3{font-size:13px;margin:0 0 3px}
+.task p{margin:0;font-size:12px;color:var(--muted)}
+.task code,td code{font-size:11px;background:var(--soft);padding:1px 4px;border-radius:4px;word-break:break-all}
+.task.dim{opacity:.35}
+.task.hl{outline:2px solid var(--c);outline-offset:1px}
+.pill{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:4px;margin-top:6px}
+.s-done{background:var(--done-bg);color:var(--done)}
+.s-unc{background:var(--unc-bg);color:var(--unc)}
+.s-wait{background:var(--wait-bg);color:var(--wait)}
+.s-gap{background:var(--gap-bg);color:var(--gap);border:1px dashed var(--gap)}
+.s-next{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.owner{--c:var(--owner)} .pm{--c:var(--pm)} .po{--c:var(--po)} .dl{--c:var(--dl)} .qa{--c:var(--qa)}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--soft)}
+td.n{font-variant-numeric:tabular-nums;color:var(--muted);width:40px}
+tr.dim{opacity:.35}
+tr:hover td{background:var(--soft)}
+.who{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.tablewrap{overflow-x:auto}
+.issues{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 16px}
+.issues li{margin:4px 0}
+.muted{color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<main>
+  <button class="tbtn" id="theme" type="button">Toggle theme</button>
+  <h1>Agent tasks, in sequence, up to gate G1</h1>
+  <p class="sub">What each role did (or still owes) from the architecture input to G1, numbered in the order it happened. Global sequence numbers match the workflow diagram (<code>g1-workflow-diagram.html</code>). Click a task to highlight it in the sequence table.</p>
+
+  <section class="kpis" id="kpis"></section>
+
+  <div class="controls" id="filters" role="group" aria-label="Filter by role"></div>
+
+  <section class="cols" id="cols"></section>
+
+  <h2>Global sequence</h2>
+  <div class="tablewrap"><table id="seq"><thead><tr><th>#</th><th>Date</th><th>Role</th><th>Task</th><th>Artifact</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+
+  <h2>Things to fix or know before you tick G1</h2>
+  <ul class="issues">
+    <li><b>Nothing from 2026-10-31 is committed.</b> intent-001, spec-001, the agent files, the workflow and CLAUDE.md are modified; <code>docs/gates/</code>, <code>docs/specs/</code> and <code>docs/templates/</code> are untracked. The gate rule says agents proceed only after <code>Owner approval: [x]</code> is committed.</li>
+    <li><b>Dev Lead and QA reviews are not evidenced.</b> RADIO marks both as "R" on intent and AC; no review file exists.</li>
+    <li><b>Leftover line in intent 9.3:</b> "Still open for the Owner ...:" is followed by an empty list (Q-O37 and Q-O38 are now answered).</li>
+    <li><b>2 AC still open, owned by the Dev Lead:</b> CICD-AC14 (Q-D3) and SCALE-AC04 (Q-D7). G1.md marks them as not blocking.</li>
+    <li><b>Step 2 is only partly done:</b> CI has only <code>.github/workflows/protect_tests.yml</code>. It is not a G1 item, but the workflow places it before Step 3.</li>
+  </ul>
+  <p class="muted">Sources: git log (c12ec17, 29d35d9), git diff of 2026-10-31, intent-001 change history, spec-001 Summary and Decisions log, docs/gates/G1.md. Who made the 2026-10-31 process edits isn't recorded; they're credited to the PM/SM main session.</p>
+</main>
+
+<script>
+var ROLES=[
+  {id:'owner',name:'Owner',role:'Decides and approves every gate'},
+  {id:'pm',name:'PM / Scrum Master',role:'Main session: coordinates, filters questions, prepares gates'},
+  {id:'po',name:'Product Owner',role:'Intent, acceptance criteria, NFR, decisions log'},
+  {id:'dl',name:'Dev Lead',role:'Scaffolding; reviews AC; owns Q-D questions'},
+  {id:'qa',name:'QA',role:'Reviews AC for testability'}
+];
+var S={done:['Done','s-done'],unc:['Done, uncommitted','s-unc'],wait:['Waiting on you','s-wait'],gap:['Not evidenced','s-gap'],next:['Blocked by G1','s-next']};
+var T=[
+ [1,'2026-10-03','owner','Provide high-level architecture','Approved as-is; cited as "ARCH" in the spec.','20261003_02_high_level_architecture.png','done'],
+ [2,'2026-10-11','owner','Define workflow v3','5 roles, gates G1 to G7, Owner is sole approver.','docs/process/ai-native-sdlc-workflow.md','done'],
+ [3,'2026-10-13','dl','Step 2: agent scaffolding','Agent files, AGENTS.md, CLAUDE.md v0, Codex dev-1/dev-2. CI has only protect_tests.yml.','commit c12ec17','done'],
+ [4,'2026-10-13','owner','Step 1: give the request','About 50 employees, office hours only, shut down out of hours.','intent-001 s.1','done'],
+ [5,'2026-10-13','po','Write intent-001','Problem, outcome, users, scope, constraints, personal-data security, Q-O1 to Q-O7, Q-D1 to Q-D6.','docs/intent/intent-001.md','done'],
+ [6,'2026-10-13','owner','Approve intent-001','Later revisions are confirmed at G1.','intent-001 header','done'],
+ [7,'2026-10-13','po','Steps 3/3b: draft AC and NFR','Application AC groups and ISO 25010 NFR in spec-001.','docs/specs/spec-001.md','done'],
+ [8,'2026-10-13','pm','Relay Q-O1 to Q-O7','Takes the PO open questions to the Owner.','intent-001 s.9.1','done'],
+ [9,'2026-10-13','owner','Answer Q-O1 to Q-O7','p95 < 2 s, start 08:45 ICT, admin screen, reactivate/delete, uniqueness, blocked removal, EN/VI UI.','intent-001 s.9.1','done'],
+ [10,'2026-10-13','po','Revise intent and spec','Records answers; raises Q-O8 to Q-O35.','intent-001, spec-001','done'],
+ [11,'2026-10-14','owner','Set infra and container focus','Keeps application scope unchanged.','intent-001 history','done'],
+ [12,'2026-10-14','po','Add infrastructure AC','IAC, NET, CNT, CICD, SEC, OBS, SCALE, COST, TDN (90 AC); Q-O36 to Q-O53; Q-D7 to Q-D12.','spec-001','done'],
+ [13,'2026-10-31','owner','Decide roles and login rules','Admin + HR member RBAC; Q-O8 to Q-O11, Q-O35. Asks not to get easy questions.','spec-001 Decisions log','done'],
+ [14,'2026-10-31','pm','Add "Decision tiers"','Agents decide and log routine defaults; PM/SM filters questions; PO and Dev Lead files updated.','workflow s.8, agent files','unc'],
+ [15,'2026-10-31','pm','Decide Q-O12 and safeguards','Account editing rules; admin brute-force protection; setup token in Secrets Manager.','spec-001 Decisions log','unc'],
+ [16,'2026-10-31','po','Decide Q-O13 to Q-O53 as defaults','Decisions log reaches 54 rows; ADM becomes ACC; ROLE and SETUP groups; Q-D13 to Q-D15.','spec-001, intent-001','unc'],
+ [17,'2026-10-31','pm','Add Step 1b: PRD','Workflow row, PO criteria, Dev Lead sections, PRD template.','docs/templates/prd-template.md','unc'],
+ [18,'2026-10-31','po','Decide: no PRD for intent-001','Spec already covers the product view.','intent-001 header','unc'],
+ [19,'2026-10-31','owner','Answer Q-O37 and Q-O38','imaprof.ink / cms.imaprof.ink; alert email kept out of repo.','spec-001 Decisions log','done'],
+ [20,'2026-10-31','pm','Rename UserHub to CMS','CLAUDE.md name and state bucket cms-terraform-state-store.','CLAUDE.md','unc'],
+ [21,'—','dl','Review intent and AC (RADIO R)','Required by RADIO; no review file in the repo.','none','gap'],
+ [22,'—','qa','Review AC for testability (RADIO R)','Required by RADIO on Step 3; no review file in the repo.','none','gap'],
+ [23,'2026-10-31','pm','Prepare gate G1','183 AC (93 app, 90 infra), 8 NFR characteristics, 54 decisions, all Owner questions answered.','docs/gates/G1.md','unc'],
+ [24,'Now','owner','Approve G1','Review and override any default, then tick Owner approval: [x] and commit.','docs/gates/G1.md','wait'],
+ [25,'Next','dl','Step 4b: Basic Design','Answer Q-D1 to Q-D15; close CICD-AC14, SCALE-AC04; ends at G2.','spec-001, function-list.md','next']
+];
+var active=null, sel=null;
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function kpis(){
+  var cnt={}; T.forEach(function(t){cnt[t[6]]=(cnt[t[6]]||0)+1;});
+  var total=T.length, segs=[['done','--done'],['unc','--unc'],['wait','--wait'],['gap','--gap'],['next','--line']];
+  var bar='<div class="bar">'+segs.map(function(s){return cnt[s[0]]?'<i title="'+S[s[0]][0]+': '+cnt[s[0]]+'" style="width:'+(cnt[s[0]]/total*100)+'%;background:var('+s[1]+')"></i>':'';}).join('')+'</div>';
+  var tiles=[
+    ['G1','Waiting on Owner approval',true],
+    [(cnt.done||0)+(cnt.unc||0)+' / '+total,'Tasks done ('+(cnt.unc||0)+' uncommitted)'+bar],
+    ['183','Acceptance criteria: 93 application, 90 infra'],
+    ['54','Decisions logged (Owner, PM/SM, PO defaults)'],
+    ['0','Owner questions open (Q-O1 to Q-O53)'],
+    ['2','AC open for Dev Lead: CICD-AC14, SCALE-AC04']
+  ];
+  document.getElementById('kpis').innerHTML=tiles.map(function(k){return '<div class="kpi'+(k[2]?' alert':'')+'"><div class="v">'+k[0]+'</div><div class="l">'+k[1]+'</div></div>';}).join('');
+}
+function filters(){
+  var h='<button class="chip" aria-pressed="'+(active===null)+'" data-r="">All roles</button>';
+  ROLES.forEach(function(r){h+='<button class="chip '+r.id+'" aria-pressed="'+(active===r.id)+'" data-r="'+r.id+'"><i class="dot" style="background:var(--c)"></i>'+r.name+'</button>';});
+  var f=document.getElementById('filters'); f.innerHTML=h;
+  [].forEach.call(f.querySelectorAll('button'),function(b){b.onclick=function(){active=b.dataset.r||null; render();};});
+}
+function cols(){
+  document.getElementById('cols').innerHTML=ROLES.map(function(r){
+    var list=T.filter(function(t){return t[2]===r.id;}), done=list.filter(function(t){return t[6]==='done'||t[6]==='unc';}).length;
+    return '<div class="col '+r.id+'"><div class="colhead"><b>'+r.name+'</b><span>'+done+'/'+list.length+' done</span></div><div class="role">'+r.role+'</div>'+
+      list.map(function(t,i){var dim=(active&&active!==r.id)?' dim':'', hl=(sel===t[0])?' hl':'';
+        return '<div class="task'+dim+hl+'" data-s="'+t[0]+'" tabindex="0"><div class="top"><span class="num">'+(i+1)+'.</span><span>'+esc(t[1])+'</span><span class="seq">#'+t[0]+'</span></div><h3>'+esc(t[3])+'</h3><p>'+esc(t[4])+'</p><span class="pill '+S[t[6]][1]+'">'+S[t[6]][0]+'</span></div>';}).join('')+'</div>';
+  }).join('');
+  [].forEach.call(document.querySelectorAll('.task'),function(el){el.onclick=function(){sel=+el.dataset.s; render(); var row=document.getElementById('r'+sel); if(row) row.scrollIntoView({block:'center',behavior:'smooth'});};});
+}
+function table(){
+  var name={}; ROLES.forEach(function(r){name[r.id]=r.name;});
+  document.querySelector('#seq tbody').innerHTML=T.map(function(t){
+    var dim=(active&&active!==t[2])?' class="dim"':'';
+    var st=sel===t[0]?' style="outline:2px solid var(--'+t[2]+');outline-offset:-2px"':'';
+    return '<tr id="r'+t[0]+'"'+dim+st+'><td class="n">'+t[0]+'</td><td>'+esc(t[1])+'</td><td><span class="who '+t[2]+'"><i class="dot" style="background:var(--c)"></i>'+name[t[2]]+'</span></td><td><b>'+esc(t[3])+'</b><br><span class="muted">'+esc(t[4])+'</span></td><td><code>'+esc(t[5])+'</code></td><td><span class="pill '+S[t[6]][1]+'" style="margin:0">'+S[t[6]][0]+'</span></td></tr>';
+  }).join('');
+}
+function render(){filters();cols();table();}
+kpis(); render();
+(function(){
+  var root=document.documentElement;
+  try{var t=localStorage.getItem('theme'); if(t) root.setAttribute('data-theme',t);}catch(e){}
+  document.getElementById('theme').onclick=function(){
+    var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+    var n=dark?'light':'dark'; root.setAttribute('data-theme',n); try{localStorage.setItem('theme',n);}catch(e){}
+  };
+})();
+</script>
+</body>
+</html>

@@ -23,6 +23,7 @@ Each step ends with a committed file that the next step reads. Git history is th
 
 ```
 Your request → intent.md
+  → prd.md (only when the PO decides the feature needs one)
   → spec.md (requirements + NFR + acceptance criteria + Basic Design, starting from your high-level architecture)
   → function list → Product Backlog (user stories) + Release Plan
   → plan.md (per story) → tests (QA) → code (Dev) → review (Dev Lead) → PR
@@ -70,11 +71,11 @@ Your request → intent.md
 ### 2.3 Example: Dev Lead assigns work to Dev 1
 
 ```bash
-git worktree add ../wt-US01-dev1 -b feat/US01-dev1
+git worktree add ../wt-US01-dev1 feature/US01_user_list
 cd ../wt-US01-dev1
 codex exec --sandbox workspace-write \
   -o ../reports/handoff/US01-dev1.md \
-  "You are Dev 1. Read AGENTS.md and docs/process/agents/dev-1.md. Do the tasks assigned in docs/plans/US01.plan.md. Do not edit files in tests/. Run the check command until it passes, then write the handoff report."
+  "You are Dev 1. Read AGENTS.md and docs/process/agents/dev-1.md. Do the tasks assigned in docs/plans/US01.plan.md. Do not edit files in tests/. Run the check command until it passes. Do not commit; propose one commit per task, then write the handoff report."
 ```
 
 Fix round after review: `codex exec resume --last "Fix the issues in docs/reviews/US01-review.md"` [12].
@@ -108,6 +109,7 @@ The steps below are a 9-step initiation process adapted for a personal project (
 | Step | What to do | Who | Artifact | Gate |
 | --- | --- | --- | --- | --- |
 | 1 | Receive the request: you describe the simple requirement; the PO writes `intent.md` (problem, desired outcome, users, constraints, open questions). State personal-data security requirements explicitly (see section 8) | PO (D), you (A) | `docs/intent/intent-001.md` | |
+| 1b *(added 2026-10-31)* | PRD: the PO decides whether the feature needs a PRD (criteria in `.claude/agents/product-owner.md`), records the decision in the intent, and if needed writes it from `docs/templates/prd-template.md`. Acceptance criteria and NFR numbers stay in `spec.md`; the PRD references their IDs | PO (D), Dev Lead (R), you (A) | `docs/prd/prd-<NNN>-<slug>.md` | G1 |
 | 2 | Minimal infrastructure: Git repo, a single DEV environment, a CI pipeline (build, test, lint) and automatic deploy to DEV when merged to `develop`; set up the agent scaffolding (`CLAUDE.md`, `AGENTS.md`, `.claude/agents/`, hooks) | Dev Lead (D), you (A) | `.github/` or CI scripts, `.claude/`, `CLAUDE.md` v0, `AGENTS.md` v0 | |
 | 3 | Settle acceptance criteria for each requirement: testable and measurable. Example: "Add employee" must allow uploading a PDF contract, automatically create an account, send a welcome email, and respond in under 1 second | PO (D), QA (R), you (A) | "Acceptance Criteria" section of `spec.md` | **G1** |
 | 3b *(added)* | Clarify NFRs with the ISO 25010 checklist [3]: capacity, availability, security, performance, compatibility, usability, maintainability, portability. The PO asks you for the missing numbers | PO (D), you (A) | "NFR" section of `spec.md` | G1 |
@@ -187,13 +189,14 @@ At Sprint Planning, each user story is broken into technical tasks by layer. Exa
 
 ### 6.3 Executing a story
 
-1. **QA writes test cases first**, from the acceptance criteria, in `tests/`. This is test-first: the Dev must make the tests pass without editing them [2].
+0. **Branch and summaries.** After G4, the Dev Lead creates `feature/<story>_<summary>` from `develop`. The PO, Dev Lead and QA each write `reports/handoff/<story>-<role>-summary.md`; the PM/SM gives you one combined summary, and implementation starts only after you approve. See `.claude/rules/global.md`.
+1. **QA writes test cases first**, from the acceptance criteria, in `tests/`, on the feature branch. This is test-first: the Dev must make the tests pass without editing them [2].
 2. **One story goes to one Dev (Codex)**, working in a dedicated worktree, in the order DB → BE → FE → Infra *(proposal)*. A story is not split across Devs because the layers of one story are tightly coupled, and splitting loses information between agents [7].
 3. **Feedback loop.** The Dev runs a single check command (test, build, lint, type check) and iterates until it passes [2].
 4. **The Dev Lead reviews** the diff against `REVIEW.md` and `spec.md`, including a security check. The Dev Lead only reports issues and does not fix code [2][7]. Results go in `docs/reviews/US01-review.md`.
 5. **Fix rounds:** the Dev fixes issues from the review, at most 3 rounds *(proposal)*. After 3 rounds the PM/SM escalates to you.
 6. **QA runs the full test suite** and writes a report to `reports/test-report-US01.md`.
-7. **The PM/SM opens the PR** (one PR per story, one commit per task) with a summary for you.
+7. **The PM/SM opens the PR** (one PR per story, one commit per task) with a summary for you. Every commit is made only after you review the diff and the message (`.gitmessage`); Devs do not commit themselves.
 8. **You approve the PR (gate G5).** After merging into `develop`, CI deploys to DEV automatically.
 
 ### 6.4 Running stories in parallel
@@ -230,13 +233,28 @@ Applies when you want to add a feature or change scope after the baseline is fro
 - When something is ambiguous or irreversible: stop and write an open question in the handoff report; do not guess.
 - Hooks must be fast [2].
 
+### Decision tiers (added 2026-10-31)
+
+The Owner asked not to be asked easy questions that have a standard answer in software design.
+
+- **Agents decide:** routine defaults with a standard industry answer (validation rules, page sizes, timeouts, retention periods, alarm thresholds, naming, design patterns). The deciding agent records each one in the file's "Decisions log" (ID, decision, reason, criteria affected). The Owner sees them all at the next gate and can override any of them.
+- **The Owner decides:** only
+  - changes to scope (features, roles, user groups)
+  - contradictions with an earlier Owner decision
+  - cost beyond the approved budget, or changes to the approved architecture
+  - weakening security below common practice
+  - irreversible or destructive actions
+  - values only the Owner holds (domains, email addresses, accounts)
+
+  Each Owner question comes with a recommended answer. The PM/SM filters every question against this list before relaying it.
+
 ### Gates (you approve all of them)
 
 Recording method *(proposal)*: each gate has a file `docs/gates/Gx.md` with a checklist and a line `Owner approval: [ ]`. Agents proceed only after you change it to `[x]` and commit.
 
 | Gate | Question you answer | Blocks |
 | --- | --- | --- |
-| G1 Intent and AC | Are the scope and acceptance criteria correct? | Basic Design |
+| G1 Intent and AC | Are the scope, the PRD (if any) and the acceptance criteria correct? | Basic Design |
 | G2 Basic Design | Does the design match your architecture, and are open decisions resolved? | Backlog |
 | G3 Baseline | Are the plan, backlog and assignments settled? | Sprint 1 |
 | G4 Plan | Is the story's plan correct before any code is written? | Writing code |
@@ -250,7 +268,7 @@ Recording method *(proposal)*: each gate has a file `docs/gates/Gx.md` with a ch
 
 - **Environment:** DEV only. CI runs on every PR; after you merge into `develop`, the pipeline deploys to DEV automatically.
 - **A release** is a git tag on `develop` after you approve G7. There is no other environment for agents to deploy to.
-- **Maintenance:** bugs or ideas that come up are written by the PO as a new `intent.md` and added to the Product Backlog. The PO prioritizes them for later sprints [1][2]. Every bug fixed comes with a new eval or test so it does not recur [2].
+- **Maintenance:** bugs or ideas that come up are written by the PO as a new `intent.md` and added to the Product Backlog. For a larger feature the PO also writes a PRD (Step 1b). The PO prioritizes them for later sprints [1][2]. Every bug fixed comes with a new eval or test so it does not recur [2].
 - *(Optional, later)* If the project moves to a real environment, add threshold-based monitoring and gated environments, following Anthropic's playbook [2].
 
 ---
@@ -276,7 +294,7 @@ Recording method *(proposal)*: each gate has a file `docs/gates/Gx.md` with a ch
 │   │   ├── workflow.md           # this v3, the shared source for all agents
 │   │   └── agents/dev-1.md  dev-2.md  dev-3.md
 ├── 20261003_02_high_level_architecture.png  # high-level architecture, provided by you
-│   ├── intent/  specs/  plans/  reviews/  gates/  change-requests/  decisions/
+│   ├── intent/  prd/  templates/  specs/  plans/  reviews/  gates/  change-requests/  decisions/
 │   ├── backlog.md  release-plan.md  radio.md  project-plan.md  kickoff.md  reuse-assets.md
 ├── assets/                       # old docs, components, schemas for reuse
 ├── src/   tests/   evals/   testdata/mock/
@@ -361,7 +379,7 @@ Follow docs/process/workflow.md and the role file in docs/process/agents/.
 ## The single check command
 <cmd>   # test + build + lint + type check
 ## Conventions
-- Branch: feat/<story>-<dev>; one commit per task
+- Branch: feature/<story>_<summary>; one commit per task, made only after Owner approval
 - Coding convention: <fill in after step 8>
 ## Never do
 - Edit tests/, read .env, use real data, merge on your own

@@ -10,11 +10,7 @@ Your tests are the definition of "done" that a Dev works against. They are writt
 
 ## Rules shared by every agent
 
-- The Owner (the user) is the only approver at every gate G1-G7. Agents do and propose; they never approve.
-- Hand off only through files (`docs/`, `reports/handoff/`), never by message.
-- Use only mock data in `testdata/mock/`. Never read `.env` or secrets.
-- Work only inside the approved baseline. A request outside it becomes a Change Request.
-- When something is ambiguous or irreversible, stop and write an open question. Do not guess.
+Follow `.claude/rules/global.md` (loaded automatically). In short: nothing happens without the Owner's approval, no commit without the Owner's review (message per `.gitmessage`), one `feature/<story>_<summary>` branch per feature, and summaries go to the PM/Scrum Master before any Dev starts.
 
 ## What you do
 
@@ -24,7 +20,7 @@ Your tests are the definition of "done" that a Dev works against. They are writt
 2. Write the tests in `tests/`. Each test traces to exactly one acceptance criterion: put the ID (for example `US01-AC03`) in the test name or a comment. Every criterion has at least one test, including its failure paths.
 3. Use only data from `testdata/mock/`. If the data you need is missing, add mock data there; never use real personal data.
 4. Run the tests and confirm they fail for the right reason (the feature is missing), not because of a mistake in the test.
-5. Commit the tests before the Dev Lead assigns the story.
+5. Commit the tests on the story's `feature/<story>_<summary>` branch, after the Owner reviews the diff and message, before the Dev Lead assigns the story.
 
 If a criterion cannot be tested as written, do not approximate it. Write an open question saying which criterion and why, so the PO can fix the criterion.
 

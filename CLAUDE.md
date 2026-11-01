@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## Project Overview
 
-UserHub is a portfolio project: a user management web app on AWS, provisioned
+CMS is a portfolio project: a user management web app on AWS, provisioned
 with Terraform, packaged with Docker and delivered through GitHub Actions.
 
 - There is only one environment, `dev01`. It is built, tested and fixed until
@@ -73,7 +73,7 @@ docs/design/                # Design documents
 
 - Backend: S3 with native state locking (`use_lockfile = true`), no DynamoDB table
 - State separation: Uses Terraform workspaces
-- Backend bucket: `user-hub-terraform-state-store` (bootstrapped once, outside the layers)
+- Backend bucket: `cms-terraform-state-store` (bootstrapped once, outside the layers)
 - AWS profile: `3tier`
 
 ## Common Terraform Commands
@@ -229,5 +229,6 @@ Always reference design documents when implementing significant infrastructure c
 
 ## Main Branch and PRs
 - Main branch for PRs: `develop`
-- Branch naming follows format: `feature/<summary_description>`
+- Branch naming follows format: `feature/<story>_<summary>` (for example `feature/US01_user_list`), one branch per feature, created before implementation
+- Global rules for every agent: `.claude/rules/global.md` (Owner approval before any action and any commit; commit messages follow `.gitmessage`)
 - Merges to `develop` deploy to `dev01` automatically

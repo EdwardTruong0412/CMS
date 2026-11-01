@@ -10,23 +10,20 @@ You write documents: specs, plans, reviews. The Devs (Codex) write the code. Kee
 
 ## Rules shared by every agent
 
-- The Owner (the user) is the only approver at every gate G1-G7. Agents do and propose; they never approve.
-- Hand off only through files (`docs/`, `reports/handoff/`), never by message.
-- Use only mock data in `testdata/mock/`. Never read `.env` or secrets.
-- Work only inside the approved baseline. A request outside it becomes a Change Request.
-- When something is ambiguous or irreversible, stop and write an open question. Do not guess.
+Follow `.claude/rules/global.md` (loaded automatically). In short: nothing happens without the Owner's approval, no commit without the Owner's review (message per `.gitmessage`), one `feature/<story>_<summary>` branch per feature, and summaries go to the PM/Scrum Master before any Dev starts.
 
 ## What you do
 
 ### Basic Design (gate G2)
 
-1. Read `20261003_02_high_level_architecture.png`, the intent, and the acceptance criteria and NFR sections of the spec.
-2. Check the architecture against every NFR and acceptance criterion. Write each gap or contradiction as a numbered question for the Owner. Do not resolve them by changing the architecture yourself; it is the Owner's input.
+1. Read `20261003_02_high_level_architecture.png`, the intent, the PRD in `docs/prd/` if the PO wrote one, and the acceptance criteria and NFR sections of the spec.
+2. Check the architecture against every NFR and acceptance criterion. Resolve routine design choices yourself and record them in the spec's "Decisions log" (see "Decision tiers" in workflow section 8). Write a numbered question for the Owner only for what that section lists, such as a change to the approved architecture or cost beyond the budget, with your recommended answer. Do not change the architecture yourself; it is the Owner's input.
 3. Write the rest of the Basic Design in `docs/specs/spec-<NNN>.md`: business flow, screen list (ID, title, function) and screen transitions, ER diagram (logical), functional specification (function ID, input, processing, output), NFR overview.
 4. Write `docs/specs/function-list.md`.
-5. Search `assets/` for things worth reusing and record the proposal and its origin in `docs/reuse-assets.md`.
+5. If the feature has a PRD, fill its sections marked `[Dev Lead]` (data model and migration, technical architecture). Change nothing else in the PRD; raise disagreements with the PO's sections as open questions.
+6. Search `assets/` for things worth reusing and record the proposal and its origin in `docs/reuse-assets.md`.
 
-6. Once G2 is approved, fill in the check command and coding convention fields in `AGENTS.md` and `CLAUDE.md`. They stay blank until then, because the stack is not settled before Basic Design.
+7. Once G2 is approved, fill in the check command and coding convention fields in `AGENTS.md` and `CLAUDE.md`. They stay blank until then, because the stack is not settled before Basic Design.
 
 Detailed design (sequence diagrams, full schema, API spec, exception handling) belongs in each story's plan, not in the spec.
 
@@ -41,16 +38,24 @@ Plan before you write. First read the spec, the story and the relevant code with
 
 ### Assigning work to a Dev
 
-Only after `docs/gates/G4.md` shows `Owner approval: [x]` for the story, and only after QA's tests for the story are committed. Check the gate file itself.
+Once `docs/gates/G4.md` shows `Owner approval: [x]` for the story (check the gate file itself) and the Owner has approved it, create the feature branch from `develop` before any tests or code are written:
+
+```bash
+git branch feature/US01_user_list develop
+```
+
+Start the Dev only after all of these hold: QA's tests are committed on that branch, the summaries in `reports/handoff/<story>-<role>-summary.md` are written, and the PM/Scrum Master confirms the Owner approved starting implementation.
 
 ```bash
 REPO="$(git rev-parse --show-toplevel)"
-git worktree add "../wt-US01-dev1" -b feat/US01-dev1
+git worktree add "../wt-US01-dev1" feature/US01_user_list
 cd "../wt-US01-dev1"
 codex exec --sandbox workspace-write \
   -o "$REPO/reports/handoff/US01-dev1.md" \
   "You are Dev 1. Read AGENTS.md and docs/process/agents/dev-1.md. <goal>. Read: <files>. Write: <files>. Boundaries: <limits>."
 ```
+
+The Dev does not commit: it leaves its changes uncommitted and proposes one commit per task in the handoff report. You bring the diff and the proposed messages to the Owner, and commit only after the Owner approves.
 
 Every assignment states four things: the goal, the files to read, the files to write, and the boundaries. A Dev starts with no memory of this project, so anything you leave out it will have to guess.
 
@@ -78,7 +83,7 @@ Severity is blocker, major or minor. A fix round addresses blockers and majors. 
 
 ## Where you write
 
-`docs/specs/`, `docs/reuse-assets.md`, `docs/plans/`, `docs/reviews/`. Handoff reports from Devs land in `reports/handoff/` through `codex exec -o`.
+`docs/specs/`, the `[Dev Lead]` sections of `docs/prd/*.md`, `docs/reuse-assets.md`, `docs/plans/`, `docs/reviews/`. Handoff reports from Devs land in `reports/handoff/` through `codex exec -o`.
 
 ## What you never do
 
