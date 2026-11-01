@@ -1,6 +1,10 @@
 # AI-Native SDLC Workflow — v3 (English)
 
-**Version:** v3 (2026-10-11). English translation of the Vietnamese v3. v1 and v2 are kept unchanged.
+**Version:** v3.1 (2026-11-01). v3 (2026-10-11) is the English translation of the Vietnamese v3; v1 and v2 are kept unchanged.
+
+**Changes in v3.1 (2026-11-01, Owner decisions):**
+- Story runs: section 6.3 steps 2 to 8 can run as one automated loop, `/story <story>` (`.claude/skills/story/SKILL.md`), adapted from the `software-factory-claude-code` template. Review is split into parallel lenses (code by the Dev Lead, security, infra, and UI when `src/web/` changes). An `approver` agent merges the story's PR into `develop` or escalates to you (section 6.3a).
+- CD is manual: merging into `develop` no longer deploys to DEV; you run the CD workflows yourself.
 
 **Purpose:** a workflow for a personal project carried out by a team of agents, where you are the final approver at every gate. The team has five roles: PM/Scrum Master, Product Owner, Dev Lead, QA (run with Claude Code) and Devs (run with Codex).
 
@@ -60,6 +64,8 @@ Your request → intent.md
 | Dev Lead | Claude Code | `.claude/agents/dev-lead.md` | Complete Basic Design from your architecture, write `plan.md`, assign work to Devs, review code, check security |
 | QA | Claude Code | `.claude/agents/qa.md` | Write test cases from acceptance criteria before Devs code, run tests, report results |
 | Dev 1 to 3 | Codex | `docs/process/agents/dev-N.md` + `AGENTS.md` | Implement a story from `plan.md` in a dedicated worktree |
+| Review lenses (v3.1) | Claude Code | `.claude/agents/reviewer-{security,infra,ui}.md` | Review a story branch in parallel with the Dev Lead's code review, in a story run |
+| Approver (v3.1) | Claude Code | `.claude/agents/approver.md` | Decide APPROVE (merge) or ESCALATE (to you) at the end of a story run |
 
 ### 2.2 How they work together
 
@@ -96,7 +102,7 @@ You are the **Owner**, the approver (A) at every gate. The matrix below is a *(p
 | Write test cases | O | O | R | R | I | D |
 | Write code | O | O | I | R | D | R |
 | Review code | O | I | I | D | I | R |
-| Merge PR | A | I | I | R | I | R |
+| Merge PR | A (story run: on ESCALATE only; the approver agent decides otherwise) | I | I | R | I | R |
 | Change Request | A | D | R | R | I | I |
 | Release (tag) | A | R | R | R | I | R |
 
@@ -197,7 +203,22 @@ At Sprint Planning, each user story is broken into technical tasks by layer. Exa
 5. **Fix rounds:** the Dev fixes issues from the review, at most 3 rounds *(proposal)*. After 3 rounds the PM/SM escalates to you.
 6. **QA runs the full test suite** and writes a report to `reports/test-report-US01.md`.
 7. **The PM/SM opens the PR** (one PR per story, one commit per task) with a summary for you. Every commit is made only after you review the diff and the message (`.gitmessage`); Devs do not commit themselves.
-8. **You approve the PR (gate G5).** After merging into `develop`, CI deploys to DEV automatically.
+8. **You approve the PR (gate G5).** Merging into `develop` does not deploy; you run the CD workflows to deploy to DEV.
+
+### 6.3a Story runs (v3.1)
+
+Steps 2 to 8 can run as one loop: you type `/story <story>` once G4, the branch, QA's tests and the three summaries are in place, and that command approves the whole run (`.claude/rules/global.md`, "Story runs"). The loop is in `.claude/skills/story/SKILL.md`:
+
+```
+Dev (Codex) → coordinator commits → [code, security, infra, ui?] in parallel → WAIT FOR ALL
+   ▲                                    any CHANGES or tests FAIL (max 3 fix rounds) ┘
+   all PASS → QA full suite → approver → APPROVE: PR, checks, merge into develop
+                                       → ESCALATE: waits for you (/story approve | /story rework)
+```
+
+- Every agent file starts with a machine-readable line (`STATUS:`, `VERDICT:`, `RESULT:`, `APPROVE`/`ESCALATE`), so the coordinator never interprets prose.
+- Run state lives in `factory/stories/<story>/` (gitignored, shown by `factory/dashboard.html`); the record is committed with the story under `reports/stories/<story>/`.
+- The approver escalates governance, pipeline, singleton/group layer, exposure and IAM, stateful destroy/replace, cost, destructive migrations, identity code, new dependencies and scope changes. You still review every merged story at G6.
 
 ### 6.4 Running stories in parallel
 
@@ -258,7 +279,7 @@ Recording method *(proposal)*: each gate has a file `docs/gates/Gx.md` with a ch
 | G2 Basic Design | Does the design match your architecture, and are open decisions resolved? | Backlog |
 | G3 Baseline | Are the plan, backlog and assignments settled? | Sprint 1 |
 | G4 Plan | Is the story's plan correct before any code is written? | Writing code |
-| G5 PR | Does the code meet requirements, with tests and traceability? | Merge |
+| G5 PR | Does the code meet requirements, with tests and traceability? In a story run, the approver decides unless it escalates (v3.1) | Merge |
 | G6 Sprint Review | Does the story meet the Definition of Done? | Closing the story |
 | G7 Release | Are all checks green on DEV, ready to place the release tag? | Release tag |
 
@@ -266,7 +287,7 @@ Recording method *(proposal)*: each gate has a file `docs/gates/Gx.md` with a ch
 
 ## 9. Phase C: Release and maintenance
 
-- **Environment:** DEV only. CI runs on every PR; after you merge into `develop`, the pipeline deploys to DEV automatically.
+- **Environment:** DEV only. CI runs on every PR; deploying to DEV is a CD workflow you run by hand after merging into `develop`.
 - **A release** is a git tag on `develop` after you approve G7. There is no other environment for agents to deploy to.
 - **Maintenance:** bugs or ideas that come up are written by the PO as a new `intent.md` and added to the Product Backlog. For a larger feature the PO also writes a PRD (Step 1b). The PO prioritizes them for later sprints [1][2]. Every bug fixed comes with a new eval or test so it does not recur [2].
 - *(Optional, later)* If the project moves to a real environment, add threshold-based monitoring and gated environments, following Anthropic's playbook [2].

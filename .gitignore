@@ -4,3 +4,6 @@
 .terraform/
 *.tfstate
 *.tfstate.*
+
+# /story run state (the record is committed under reports/stories/)
+/factory/stories/

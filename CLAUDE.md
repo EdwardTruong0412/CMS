@@ -186,7 +186,8 @@ Always specify the workspace when working with env layer resources using the `TF
 
 ### Pipeline flow
 - Pull request: API and UI checks, `terraform fmt` / `validate` / `plan`, tflint, Trivy config and image scans
-- Merge to `develop`: push image, `terraform apply`, migrate, deploy to `dev01`, smoke test
+- Merge to `develop`: no automatic deploy
+- CD (manual, run by the Owner): push image, `terraform apply`, migrate, deploy to `dev01`, smoke test
 
 ## Module Development Guidelines
 
@@ -231,4 +232,5 @@ Always reference design documents when implementing significant infrastructure c
 - Main branch for PRs: `develop`
 - Branch naming follows format: `feature/<story>_<summary>` (for example `feature/US01_user_list`), one branch per feature, created before implementation
 - Global rules for every agent: `.claude/rules/global.md` (Owner approval before any action and any commit; commit messages follow `.gitmessage`)
-- Merges to `develop` deploy to `dev01` automatically
+- Merges to `develop` do not deploy; the Owner runs the CD workflows by hand
+- Story runs: `/story <story>` (`.claude/skills/story/SKILL.md`) builds, reviews, tests and, on the approver's `APPROVE`, merges one story's PR into `develop`. Board: `cd factory && python3 -m http.server`, then open `dashboard.html`

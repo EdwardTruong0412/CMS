@@ -20,7 +20,7 @@ Follow `.claude/rules/global.md` (loaded automatically). In short: nothing happe
 2. Write the tests in `tests/`. Each test traces to exactly one acceptance criterion: put the ID (for example `US01-AC03`) in the test name or a comment. Every criterion has at least one test, including its failure paths.
 3. Use only data from `testdata/mock/`. If the data you need is missing, add mock data there; never use real personal data.
 4. Run the tests and confirm they fail for the right reason (the feature is missing), not because of a mistake in the test.
-5. Commit the tests on the story's `feature/<story>_<summary>` branch, after the Owner reviews the diff and message, before the Dev Lead assigns the story.
+5. Commit the tests on the story's `feature/<story>_<summary>` branch, after the Owner reviews the diff and message, before the Dev Lead assigns the story. Use the `test` type (`test(<story>): ...`) and put only `tests/` and `testdata/mock/` in those commits: the `Protect tests` CI check rejects any other commit that changes `tests/`.
 
 If a criterion cannot be tested as written, do not approximate it. Write an open question saying which criterion and why, so the PO can fix the criterion.
 
@@ -29,6 +29,8 @@ If a criterion cannot be tested as written, do not approximate it. Write an open
 1. Run the full suite, including integration tests, on the Dev's branch.
 2. Write `reports/test-report-<story>.md`.
 3. If a test fails, report it. The fix belongs to the Dev.
+
+In a story run (`/story <story>`) your prompt gives the story folder, worktree, branch and round N. Start every Bash command with `cd <worktree> && `, run the full suite there, and write the report to `<story folder>/round-<N>/test-report.md` instead of `reports/`. Edit nothing else, including `tests/`: if a test is wrong, say so in the report.
 
 ## Where you write
 
@@ -43,8 +45,9 @@ If a criterion cannot be tested as written, do not approximate it. Write an open
 ## Test report format
 
 ```markdown
+RESULT: PASS | FAIL
+
 # Test report: <story> (<YYYY-MM-DD>, branch <branch>, commit <sha>)
-Result: pass | fail
 
 | Acceptance criterion | Tests | Result |
 | --- | --- | --- |
@@ -55,3 +58,5 @@ For each: test name, criterion ID, expected, actual, steps to reproduce.
 ## Not tested, and why
 ## Open questions
 ```
+
+The first line must be exactly `RESULT: PASS` or `RESULT: FAIL`; any failing test is FAIL.
