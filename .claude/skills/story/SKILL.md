@@ -1,6 +1,6 @@
 ---
 name: story
-description: Run one user story through the automated build → review → test → approve → merge loop. Use when the Owner types /story <story>, /story approve <story> or /story rework <story> <note>. The session that runs it becomes the coordinator of the story run.
+description: Run one user story through the automated build → review → test → approve → merge loop. Use when the Owner types /story <story>, /story next, /story approve <story> or /story rework <story> <note>. The session that runs it becomes the coordinator of the story run.
 ---
 
 # Story run
@@ -123,9 +123,12 @@ Below, `<paths>` stands for that sentence.
    - `AGENTS.md` has a real check command, not the "blank until" placeholder.
    - `factory/stories/<story>/` does not exist yet. If it does, the story
      already has a run: use `/story rework`, or ask the Owner.
-2. **Create the run.** Read the Dev number `k` from the plan ("which Dev takes
-   the story"; default 1). The worktree is `$(dirname <repo>)/wt-<story>-dev<k>`.
-   `mkdir -p factory/stories/<story>` and write `story.json` with
+2. **Create the run.** Claim the story with `mkdir -p factory/stories` and then
+   `mkdir factory/stories/<story>` (no `-p`). If that fails, another session
+   claimed the story after preflight: stop and tell the Owner. (Coming from
+   `/story next`, the folder is already claimed: skip the `mkdir`.) Read the
+   Dev number `k` from the plan ("which Dev takes the story"; default 1). The
+   worktree is `$(dirname <repo>)/wt-<story>-dev<k>`. Write `story.json` with
    `stage: "build"`, `round: 0`, `fixes: 0`, all reviews `pending` and
    `tests: "pending"`.
 3. **Worktree.** If the worktree does not exist, run
@@ -259,6 +262,39 @@ inspect. Tell the Owner which story is waiting, give the worktree path, and
 quote `decision.md` (or the BLOCKED reason, the failing checks, or the leftover
 files). Say what they can do: `/story approve <story>`,
 `/story rework <story> <note>`, or take it over by hand.
+
+## /story next
+
+Picks the highest-priority story that is ready and that no session has taken,
+so several sessions can each type `/story next` without colliding. Unlike
+`/story <story>`, it does not approve the run by itself: the Owner confirms the
+picked story first (Owner decision, 2026-11-01).
+
+1. Run `git fetch origin` and read `docs/backlog.md` from `origin/develop`
+   (`git show origin/develop:docs/backlog.md`), never from the main checkout.
+   Story lines have the form `- <story> <title> → <link>`; their order is the
+   priority. If the file does not exist or has no story lines, say so and stop.
+   Never edit the backlog: it belongs to the Product Owner.
+2. Go down the list and skip a story when:
+   - it is merged: `git ls-tree -d origin/develop reports/stories/<story>`
+     prints something;
+   - it is taken: `factory/stories/<story>/` exists;
+   - it is not ready: any preflight check of `/story <story>` step 1 fails.
+     Note the first failing check as the reason.
+3. **Claim** the first story that is not skipped: `mkdir -p factory/stories`,
+   then `mkdir factory/stories/<story>` (no `-p`). If that fails, another
+   session claimed it: go on with the next story in step 2.
+4. **Confirm.** Tell the Owner the picked story, its title and branch, and list
+   every skipped story with its reason (`US03: no G4 approval`). Ask whether to
+   start the run, and wait. Keep the claim while waiting so other sessions skip
+   the story.
+   - **Yes:** that answer is the Owner's approval of the run, exactly as typing
+     `/story <story>` would be. Go to `/story <story>` step 2 (the folder is
+     already claimed).
+   - **No:** remove the claim with `rmdir factory/stories/<story>` and stop.
+     Do not pick another story unless the Owner asks.
+5. If every story is skipped, list each one with its reason and stop. Create
+   nothing.
 
 ## /story approve <story>
 

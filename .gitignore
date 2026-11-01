@@ -10,3 +10,6 @@
 
 # Local process visuals (dashboards, diagrams), not tracked
 /docs/process/visuals/
+
+# Upstream software-factory template, kept locally for reference
+/software-factory-claude-code/
