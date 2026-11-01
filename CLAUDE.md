@@ -13,7 +13,7 @@ with Terraform, packaged with Docker and delivered through GitHub Actions.
 
 ### Tech Stack
 
-- **API** (`src/api`): Python 3.13, FastAPI, SQLAlchemy 2.x, Alembic, PostgreSQL, pytest, ruff
+- **API** (`src/api`): Python 3.13, FastAPI, SQLAlchemy 2.x, Alembic, PostgreSQL, pytest, ruff, mypy
 - **Web UI** (`src/web`): React + TypeScript, built with Vite
 - **Container**: multi-stage Dockerfile on `python:3.13-slim`, non-root user
 - **AWS** (ap-southeast-1): Route 53, CloudFront, WAF, ACM, S3, ALB, ECS Fargate,
@@ -41,7 +41,7 @@ awsenv/
     |-- singleton/          # AWS account-level resources
         |-- tfvars/
     |-- group/              # VPC-level resources
-        |-- tfvars/
+        |-- tfvars/         # lean.tfvars (1 NAT gateway), full.tfvars (2 NAT gateways)
     |-- env/                # Smallest environment unit (dev01)
         |-- tfvars/         # dev01.tfvars (lean), dev01_full.tfvars (full)
 modules/                    # Reusable Terraform child modules
@@ -63,7 +63,7 @@ docs/design/                # Design documents
 
 1. **Root modules** are in `awsenv/` directory
 2. **Child modules** are in `modules/` directory and called from root modules
-3. Environment differences are managed using `.tfvars` files in `awsenv/dev/env/tfvars/`
+3. Environment differences are managed using `.tfvars` files: `awsenv/dev/env/tfvars/` for the env layer, and `awsenv/dev/group/tfvars/` for the NAT gateway count of the group layer. A profile (lean or full) is one file in each of the two layers
 4. Terraform workspaces manage tfstate for the env layer
 5. Modules are organized by **function/purpose**, not by AWS resource type
 6. **Dependency rule**: Higher-level modules (singleton) cannot depend on lower-level modules (env), but env can depend on singleton
@@ -73,7 +73,7 @@ docs/design/                # Design documents
 
 - Backend: S3 with native state locking (`use_lockfile = true`), no DynamoDB table
 - State separation: Uses Terraform workspaces
-- Backend bucket: `cms-terraform-state-store` (bootstrapped once, outside the layers)
+- Backend bucket: `cms-terraform-state-store` (bootstrapped once, outside the layers), region ap-southeast-1 (`region = "ap-southeast-1"` in every backend block)
 - AWS profile: `3tier`
 
 ## Common Terraform Commands
@@ -84,6 +84,7 @@ Navigate to the appropriate directory (`awsenv/dev/env`, `awsenv/dev/group`, `aw
 
 ```bash
 export AWS_PROFILE=3tier
+export AWS_REGION=ap-southeast-1
 
 # Initialize (required before first use)
 terraform init -upgrade
@@ -97,18 +98,27 @@ terraform workspace select dev01
 terraform plan -var-file=tfvars/dev01.tfvars        # lean sizing, used while fixing bugs
 terraform plan -var-file=tfvars/dev01_full.tfvars   # full sizing, final verification only
 
-# Plan changes (group/singleton layers without tfvars)
+# Plan changes (group layer with tfvars)
+terraform plan -var-file=tfvars/lean.tfvars         # lean: 1 NAT gateway
+terraform plan -var-file=tfvars/full.tfvars         # full: 2 NAT gateways, final verification only
+
+# Plan changes (singleton layer without tfvars)
 terraform plan
 
 # Apply changes
 terraform apply -var-file=tfvars/dev01.tfvars   # for env
-terraform apply                                 # for group/singleton
+terraform apply -var-file=tfvars/lean.tfvars    # for group
+terraform apply                                 # for singleton
 
 # Format code
 terraform fmt -recursive
 ```
 
 Apply order: singleton -> group -> env. Destroy in reverse order: env -> group (-> singleton).
+
+- Every build, check and destroy session ends by destroying env, then group, with the same profile files they were applied with. Singleton is destroyed only at the final teardown.
+- Profile switch (lean <-> full): apply group, then env, each with that profile's file (`lean.tfvars` with `dev01.tfvars`, `full.tfvars` with `dev01_full.tfvars`). No `.tf` file changes.
+- Plans that must report no changes (after an apply or a CD run, or the lean check of COST-AC02) are run during office hours: out of hours the schedule has set the ECS scalable target to 0, and the plan shows it as a change.
 
 ### Validation and Linting
 
@@ -129,18 +139,31 @@ trivy config .
 # Run API, PostgreSQL and UI dev server locally
 docker compose up
 
+# Check command (from the repo root): API, web and Terraform lint, type check, tests and build.
+# What it runs is defined in AGENTS.md, "The check command"
+make check
+
 # API (from src/api)
 pytest
 ruff check .
+ruff format --check .
+mypy
 alembic upgrade head                            # apply migrations
 alembic revision --autogenerate -m "<message>"  # create a migration from model changes
 
 # Web UI (from src/web)
 npm run lint
+npm run typecheck
 npm run build
 ```
 
 Database schema changes always go through an Alembic migration; never change the schema by hand.
+
+Coding conventions for Python, TypeScript/React, Terraform and GitHub Actions: `AGENTS.md`, "Coding convention" (one source for Claude Code and Codex).
+
+Testing notes:
+- Hours-long timers (8-hour session, 24-hour temporary password, the lock after 60 minutes) are proven by automated tests with a controlled clock, not waited out on `dev01` (D-PM3).
+- The stop and start cycle is checked on `dev01` with a test schedule set a few minutes ahead, not at the real 18:00 and 08:45 ICT times; the schedule is reset to 18:00 and 08:45 afterwards (OQ-1).
 
 ## Workspace Management
 
@@ -187,7 +210,8 @@ Always specify the workspace when working with env layer resources using the `TF
 ### Pipeline flow
 - Pull request: API and UI checks, `terraform fmt` / `validate` / `plan`, tflint, Trivy config and image scans
 - Merge to `develop`: no automatic deploy
-- CD (manual, run by the Owner): push image, `terraform apply`, migrate, deploy to `dev01`, smoke test
+- CD (manual, started by hand by the Owner on `develop`): pre-flight check first, which stops the run before any change outside office hours (weekend, after 17:30 ICT on a weekday, 0 ECS tasks or RDS not available); then push image, `terraform apply`, migrate, deploy to `dev01`, smoke test
+- Every workflow gets AWS credentials through OIDC (`aws-actions/configure-aws-credentials`) with `aws-region: ap-southeast-1`
 
 ## Module Development Guidelines
 
@@ -207,19 +231,20 @@ Always specify the workspace when working with env layer resources using the `TF
 
 ## AWS Provider Configuration
 
-- Default provider: ap-southeast-1
-- Aliased provider `us_east_1`: only for the CloudFront ACM certificate and the CloudFront WAF web ACL
-- All providers use AWS profile: `3tier`
+- Default region for everything: ap-southeast-1. This covers the default Terraform provider in every layer, the S3 backend, the AWS CLI (`AWS_REGION=ap-southeast-1` next to `AWS_PROFILE=3tier` locally) and the GitHub Actions OIDC credentials step (`aws-region: ap-southeast-1`)
+- Aliased provider `us_east_1`: only for four resources: the CloudFront ACM certificate, the CloudFront WAF web ACL, the CloudWatch alarm on the web ACL's blocked requests, and one EventBridge rule that forwards that alarm's state changes to the default event bus in ap-southeast-1. The alarm and the rule live in `modules/monitoring` (IAC-AC09)
+- AWS profile `3tier` for local runs, supplied through `AWS_PROFILE`. Provider and backend blocks name no profile, so GitHub Actions uses its OIDC credentials with the same code
 
 ## Monitoring
 
-All alarms, dashboards, log metric filters and EventBridge rules live in `modules/monitoring`, called from the env layer. The SNS alert topic lives in the group layer. See section 8 of the requirements document for the alarm list and thresholds.
+All alarms, dashboards, log metric filters and EventBridge rules live in `modules/monitoring`, called from the env layer. The SNS alert topic lives in the group layer. See OBS-AC05 in `docs/specs/spec-001.md` for the alarm list and thresholds.
 
 ## Cost
 
-- Lean sizing (`dev01.tfvars`) while iterating; full sizing (`dev01_full.tfvars`) only for the final verification
-- AWS Budget alert: $10
-- Destroy the environment after verification and follow the clean-up checklist in the requirements document
+- AWS Budget alert: $2 per month (80% at $1.60, 100% at $2). It is an early signal, not a cap: singleton alone uses part of it each month and Budgets data lags several hours
+- The env and group layers exist only for a build, check and destroy session and are destroyed at its end. Only singleton stays between sessions
+- Lean sizing (`group/tfvars/lean.tfvars` and `env/tfvars/dev01.tfvars`) while iterating; full sizing (`group/tfvars/full.tfvars` and `env/tfvars/dev01_full.tfvars`) only for the final verification, applied and removed within office hours on the same weekday
+- Final teardown: destroy env, group and singleton, then follow the clean-up checklist required by TDN-AC02 in `docs/specs/spec-001.md`
 
 ## Design Documentation
 
