@@ -29,6 +29,8 @@ Install required tools using the Makefile:
 make bootstrap # Installs tfenv, trivy, tflint, drawio
 ```
 
+The `Makefile` is still empty: the `bootstrap` and `check` targets are added by the first story (US01).
+
 Terraform version: specified in `.terraform-version`
 
 ## Directory Structure and Architecture
@@ -48,7 +50,10 @@ modules/                    # Reusable Terraform child modules
 src/
 |-- api/                    # FastAPI backend + Alembic migrations
 |-- web/                    # React frontend
-docs/design/                # Design documents
+tests/                      # QA-owned tests: api/, infra/, web/, dev01/ (layout in AGENTS.md)
+docs/specs/                 # Spec and Basic Design (spec-001.md), function list
+docs/plans/                 # Story plans with the detailed design (<story>.plan.md)
+docs/design/                # Other design documents
 ```
 
 ### Directory Hierarchy
@@ -159,7 +164,7 @@ npm run build
 
 Database schema changes always go through an Alembic migration; never change the schema by hand.
 
-Coding conventions for Python, TypeScript/React, Terraform and GitHub Actions: `AGENTS.md`, "Coding convention" (one source for Claude Code and Codex).
+Coding conventions for Python, database and Alembic migrations, Dockerfile, TypeScript/React, Terraform, GitHub Actions and the test layout: `AGENTS.md`, "Coding convention" (one source for Claude Code and Codex). `docs/kickoff.md` summarises them and records the kick-off decisions (KO-n).
 
 Testing notes:
 - Hours-long timers (8-hour session, 24-hour temporary password, the lock after 60 minutes) are proven by automated tests with a controlled clock, not waited out on `dev01` (D-PM3).
@@ -196,8 +201,9 @@ Always specify the workspace when working with env layer resources using the `TF
 - `tflint_dev_{env|group|singleton}.yml` - Linting
 - `trivy_dev_{env|group|singleton}.yml` - Security scanning
 - `trivy_modules.yml` - Security scan for modules
-- `api_test.yml` - API lint (ruff) and tests (pytest)
-- `web_build.yml` - UI lint and build
+- `api_test.yml` - API lint and format check (ruff), type check (mypy), tests (pytest): the API part of `make check`
+- `web_build.yml` - UI lint, type check and build: the web part of `make check`
+- `protect_tests.yml` - Fails a pull request from a `feature/` branch if any commit other than QA's `test(...)` commits changes `tests/`
 
 ### Application Delivery
 - `image_build_push_dev.yml` - Docker build, Trivy image scan, push to ECR tagged with commit SHA
@@ -248,14 +254,18 @@ All alarms, dashboards, log metric filters and EventBridge rules live in `module
 
 ## Design Documentation
 
-Design documents are stored in `docs/design/` with naming convention:
+The Basic Design is in `docs/specs/spec-001.md`, and each story's detailed design is in its plan, `docs/plans/<story>.plan.md`. Other design documents are stored in `docs/design/` with naming convention:
 `YYYYMMDD_NN_<description>.md`
 
 Always reference design documents when implementing significant infrastructure changes.
 
 ## Main Branch and PRs
-- Main branch for PRs: `develop`
-- Branch naming follows format: `feature/<story>_<summary>` (for example `feature/US01_user_list`), one branch per feature, created before implementation
+Full rules: `docs/kickoff.md`, "Git branching rules".
+- Main branch for PRs: `develop`, the only long-lived branch. There is no `main` branch; releases and baselines are annotated tags on `develop` (`baseline-<n>`, `v1.0.0` at G7)
+- Branch naming follows format: `feature/<story>_<summary>` (for example `feature/US01_user_list`), one branch per feature, created before implementation. Process, design and fix work uses the same form with its own ID: `PROC<nn>`, `DES<nn>`, `FIX<nn>`, `CR<nnn>` (for example `feature/PROC06_kickoff`)
+- Pull requests are merged into `develop` with a merge commit (`gh pr merge --merge`), never squashed or rebased; agents never push to `develop` directly or force-push it, only the Owner may force-push, by hand (KO-23)
+- Worktrees sit next to the repository: `wt-<story>-dev<k>` for a Dev (the `protect-tests` hook relies on the `wt-` prefix), `wt-<ID>` for other agent work
+- After a merge the local branch and worktree are removed; the remote branch is kept unless the Owner decides otherwise (a `/story` run deletes its own, as the skill describes)
 - Global rules for every agent: `.claude/rules/global.md` (Owner approval before any action and any commit; commit messages follow `.gitmessage`)
 - Merges to `develop` do not deploy; the Owner runs the CD workflows by hand
 - Story runs: `/story <story>` (`.claude/skills/story/SKILL.md`) builds, reviews, tests and, on the approver's `APPROVE`, merges one story's PR into `develop`. `/story next` picks the next ready story from `docs/backlog.md`, claims it and asks the Owner to confirm, so parallel sessions never take the same story. Board: `cd factory && python3 -m http.server`, then open `dashboard.html`

@@ -22,7 +22,7 @@ A story run (`/story <story>`, `.claude/skills/story/SKILL.md`) is the one excep
 
 ## Branches
 
-4. **One branch per feature, created before implementation.** Before any implementation work for a story (tests or code), the Dev Lead creates `feature/<story>_<summary>` from `develop`, for example `feature/US01_user_list`. QA's tests and the Dev's code both go on that branch. Never implement on `develop` or `main`.
+4. **One branch per feature, created before implementation.** Before any implementation work for a story (tests or code), the Dev Lead creates `feature/<story>_<summary>` from `develop`, for example `feature/US01_user_list`. QA's tests and the Dev's code both go on that branch. Process, design and fix work uses the same form with its own ID (`feature/PROC06_kickoff`). Never implement on `develop` or `main`. Branching details: `docs/kickoff.md`.
    Why: each feature stays isolated, reviewable as one PR, and easy to drop.
 
 ## Coordination
