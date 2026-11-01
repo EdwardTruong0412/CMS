@@ -1,0 +1,502 @@
+[
+  {
+    "employee_code": "EMP001",
+    "full_name": "Nguyễn Thị Hồng Ánh",
+    "work_email": "anh.nguyen@example.test",
+    "phone": "0910104729",
+    "department": "Phòng Marketing",
+    "position": "Chuyên viên",
+    "start_date": "2018-03-17",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP002",
+    "full_name": "Đỗ Đức Dũng",
+    "work_email": "dung.do@example.test",
+    "phone": "0910209458",
+    "department": "Phòng Hành chính",
+    "position": "Thực tập sinh",
+    "start_date": "2018-05-17",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP003",
+    "full_name": "Trần Quốc Vượng",
+    "work_email": "vuong.tran@example.test",
+    "phone": "+84910023757",
+    "department": "Phòng Kinh doanh",
+    "position": "Kế toán trưởng",
+    "start_date": "2018-07-17",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP004",
+    "full_name": "Lê Minh Khôi",
+    "work_email": "khoi.le@example.test",
+    "phone": "0910418916",
+    "department": "Phòng Kỹ thuật",
+    "position": "Kỹ sư phần mềm",
+    "start_date": "2018-09-16",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP005",
+    "full_name": "Phạm Thu Hà",
+    "work_email": "ha.pham@example.test",
+    "phone": "0910523645",
+    "department": "Phòng Kế toán",
+    "position": "Trưởng phòng",
+    "start_date": "2018-11-16",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP006",
+    "full_name": "Hoàng Gia Bảo",
+    "work_email": "bao.hoang@example.test",
+    "phone": "+84910047514",
+    "department": "Phòng Nhân sự",
+    "position": "Nhân viên",
+    "start_date": "2019-01-16",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP007",
+    "full_name": "Huỳnh Ngọc Lan",
+    "work_email": "lan.huynh@example.test",
+    "phone": null,
+    "department": "Phòng Marketing",
+    "position": "Giám đốc",
+    "start_date": "2019-03-18",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP008",
+    "full_name": "Phan Thanh Tùng",
+    "work_email": "tung.phan@example.test",
+    "phone": "0910837832",
+    "department": "Phòng Hành chính",
+    "position": "Chuyên viên",
+    "start_date": "2019-05-18",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP009",
+    "full_name": "Vũ Thị Mai",
+    "work_email": "mai.vu@example.test",
+    "phone": "+84910071271",
+    "department": "Phòng Kinh doanh",
+    "position": "Thực tập sinh",
+    "start_date": "2019-07-18",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP010",
+    "full_name": "Võ Hữu Phúc",
+    "work_email": "phuc.vo@example.test",
+    "phone": "0911047290",
+    "department": "Phòng Kỹ thuật",
+    "position": "Kế toán trưởng",
+    "start_date": "2019-09-17",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP011",
+    "full_name": "Đặng Thị Hương",
+    "work_email": "huong.dang@example.test",
+    "phone": "0911152019",
+    "department": "Phòng Kế toán",
+    "position": "Kỹ sư phần mềm",
+    "start_date": "2019-11-17",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP012",
+    "full_name": "Bùi Văn Nam",
+    "work_email": "nam.bui@example.test",
+    "phone": "+84910095028",
+    "department": "Phòng Nhân sự",
+    "position": "Trợ lý",
+    "start_date": "2020-01-17",
+    "status": "inactive"
+  },
+  {
+    "employee_code": "EMP013",
+    "full_name": "Ngô Bích Ngọc",
+    "work_email": "ngoc.ngo@example.test",
+    "phone": "0911361477",
+    "department": "Phòng Marketing",
+    "position": "Nhân viên",
+    "start_date": "2020-03-18",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP014",
+    "full_name": "Hồ Quang Hải",
+    "work_email": "hai.ho@example.test",
+    "phone": null,
+    "department": "Phòng Hành chính",
+    "position": "Giám đốc",
+    "start_date": "2020-05-18",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP015",
+    "full_name": "Dương Thị Thảo",
+    "work_email": "thao.duong@example.test",
+    "phone": "+84910118785",
+    "department": "Phòng Kinh doanh",
+    "position": "Chuyên viên",
+    "start_date": "2020-07-18",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP016",
+    "full_name": "Lý Anh Tuấn",
+    "work_email": "tuan.ly@example.test",
+    "phone": "0911675664",
+    "department": "Phòng Kỹ thuật",
+    "position": "Thực tập sinh",
+    "start_date": "2020-09-17",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP017",
+    "full_name": "Nguyễn Văn An",
+    "work_email": "an.nguyen@example.test",
+    "phone": "0911780393",
+    "department": "Phòng Kế toán",
+    "position": "Kế toán trưởng",
+    "start_date": "2020-11-17",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP018",
+    "full_name": "Trần Thị Bích",
+    "work_email": "bich.tran@example.test",
+    "phone": "+84910142542",
+    "department": "Phòng Nhân sự",
+    "position": "Kỹ sư phần mềm",
+    "start_date": "2021-01-17",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP019",
+    "full_name": "Lê Thị Cẩm",
+    "work_email": "cam.le@example.test",
+    "phone": "0911989851",
+    "department": "Phòng Marketing",
+    "position": "Trưởng phòng",
+    "start_date": "2021-03-19",
+    "status": "inactive"
+  },
+  {
+    "employee_code": "EMP020",
+    "full_name": "Phạm Minh Châu",
+    "work_email": "chau.pham@example.test",
+    "phone": "0912094580",
+    "department": "Phòng Hành chính",
+    "position": "Nhân viên",
+    "start_date": "2021-05-19",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP021",
+    "full_name": "Hoàng Thị Diệp",
+    "work_email": "diep.hoang@example.test",
+    "phone": null,
+    "department": "Phòng Kinh doanh",
+    "position": "Giám đốc",
+    "start_date": "2021-07-19",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP022",
+    "full_name": "Nguyễn Hoài Giang",
+    "work_email": "giang.nguyen@example.test",
+    "phone": "0912304038",
+    "department": "Phòng Kỹ thuật",
+    "position": "Chuyên viên",
+    "start_date": "2021-09-18",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP023",
+    "full_name": "Trịnh Công Hiếu",
+    "work_email": "hieu.trinh@example.test",
+    "phone": "0912408767",
+    "department": "Phòng Kế toán",
+    "position": "Thực tập sinh",
+    "start_date": "2021-11-18",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP024",
+    "full_name": "Mai Thị Hoa",
+    "work_email": "hoa.mai@example.test",
+    "phone": "+84910190056",
+    "department": "Phòng Nhân sự",
+    "position": "Trợ lý",
+    "start_date": "2022-01-18",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP025",
+    "full_name": "Nguyễn Thanh Hùng",
+    "work_email": "hung.nguyen@example.test",
+    "phone": "0912618225",
+    "department": "Phòng Marketing",
+    "position": "Kỹ sư phần mềm",
+    "start_date": "2022-03-20",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP026",
+    "full_name": "Lâm Khánh Linh",
+    "work_email": "linh.lam@example.test",
+    "phone": "0912722954",
+    "department": "Phòng Hành chính",
+    "position": "Trưởng phòng",
+    "start_date": "2022-05-20",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP027",
+    "full_name": "Tạ Văn Lộc",
+    "work_email": "loc.ta@example.test",
+    "phone": "+84910213813",
+    "department": "Phòng Kinh doanh",
+    "position": "Nhân viên",
+    "start_date": "2022-07-20",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP028",
+    "full_name": "Nguyễn Thị Loan",
+    "work_email": "loan.nguyen@example.test",
+    "phone": null,
+    "department": "Phòng Kỹ thuật",
+    "position": "Giám đốc",
+    "start_date": "2022-09-19",
+    "status": "inactive"
+  },
+  {
+    "employee_code": "EMP029",
+    "full_name": "Cao Minh Nhật",
+    "work_email": "nhat.cao@example.test",
+    "phone": "0913037141",
+    "department": "Phòng Kế toán",
+    "position": "Chuyên viên",
+    "start_date": "2022-11-19",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP030",
+    "full_name": "Trần Thị Nhung",
+    "work_email": "nhung.tran@example.test",
+    "phone": "+84910237570",
+    "department": "Phòng Nhân sự",
+    "position": "Thực tập sinh",
+    "start_date": "2023-01-19",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP031",
+    "full_name": "Lê Hoàng Phong",
+    "work_email": "phong.le@example.test",
+    "phone": "0913246599",
+    "department": "Phòng Marketing",
+    "position": "Kế toán trưởng",
+    "start_date": "2023-03-21",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP032",
+    "full_name": "Phạm Thị Quyên",
+    "work_email": "quyen.pham@example.test",
+    "phone": "0913351328",
+    "department": "Phòng Hành chính",
+    "position": "Kỹ sư phần mềm",
+    "start_date": "2023-05-21",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP033",
+    "full_name": "Nguyễn Hữu Quân",
+    "work_email": "quan.nguyen@example.test",
+    "phone": "+84910261327",
+    "department": "Phòng Kinh doanh",
+    "position": "Trưởng phòng",
+    "start_date": "2023-07-21",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP034",
+    "full_name": "Hà Thị Sen",
+    "work_email": "sen.ha@example.test",
+    "phone": "0913560786",
+    "department": "Phòng Kỹ thuật",
+    "position": "Nhân viên",
+    "start_date": "2023-09-20",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP035",
+    "full_name": "Lưu Minh Sơn",
+    "work_email": "son.luu@example.test",
+    "phone": null,
+    "department": "Phòng Kế toán",
+    "position": "Giám đốc",
+    "start_date": "2023-11-20",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP036",
+    "full_name": "Nguyễn Thị Tâm",
+    "work_email": "tam.nguyen@example.test",
+    "phone": "+84910285084",
+    "department": "Phòng Nhân sự",
+    "position": "Chuyên viên",
+    "start_date": "2024-01-20",
+    "status": "inactive"
+  },
+  {
+    "employee_code": "EMP037",
+    "full_name": "Kiều Anh Thư",
+    "work_email": "thu.kieu@example.test",
+    "phone": "0913874973",
+    "department": "Phòng Marketing",
+    "position": "Thực tập sinh",
+    "start_date": "2024-03-21",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP038",
+    "full_name": "Trần Văn Thắng",
+    "work_email": "thang.tran@example.test",
+    "phone": "0913979702",
+    "department": "Phòng Hành chính",
+    "position": "Kế toán trưởng",
+    "start_date": "2024-05-21",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP039",
+    "full_name": "Lê Thị Thủy",
+    "work_email": "thuy.le@example.test",
+    "phone": "+84910308841",
+    "department": "Phòng Kinh doanh",
+    "position": "Kỹ sư phần mềm",
+    "start_date": "2024-07-21",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP040",
+    "full_name": "Phùng Minh Trí",
+    "work_email": "tri.phung@example.test",
+    "phone": "0914189160",
+    "department": "Phòng Kỹ thuật",
+    "position": "Trưởng phòng",
+    "start_date": "2024-09-20",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP041",
+    "full_name": "Nguyễn Thị Trang",
+    "work_email": "trang.nguyen@example.test",
+    "phone": "0914293889",
+    "department": "Phòng Kế toán",
+    "position": "Trợ lý",
+    "start_date": "2024-11-20",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP042",
+    "full_name": "Châu Gia Uyên",
+    "work_email": "uyen.chau@example.test",
+    "phone": null,
+    "department": "Phòng Nhân sự",
+    "position": "Giám đốc",
+    "start_date": "2025-01-20",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP043",
+    "full_name": "Tô Thanh Vân",
+    "work_email": "van.to@example.test",
+    "phone": "0914503347",
+    "department": "Phòng Marketing",
+    "position": "Chuyên viên",
+    "start_date": "2025-03-22",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP044",
+    "full_name": "Nguyễn Quang Vinh",
+    "work_email": "vinh.nguyen@example.test",
+    "phone": "0914608076",
+    "department": "Phòng Hành chính",
+    "position": "Thực tập sinh",
+    "start_date": "2025-05-22",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP045",
+    "full_name": "Lê Thị Xuân",
+    "work_email": "xuan.le@example.test",
+    "phone": "+84910356355",
+    "department": "Phòng Kinh doanh",
+    "position": "Kế toán trưởng",
+    "start_date": "2025-07-22",
+    "status": "inactive"
+  },
+  {
+    "employee_code": "EMP046",
+    "full_name": "Trương Hải Yến",
+    "work_email": "yen.truong@example.test",
+    "phone": "0914817534",
+    "department": "Phòng Kỹ thuật",
+    "position": "Kỹ sư phần mềm",
+    "start_date": "2025-09-21",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP047",
+    "full_name": "Nguyễn Minh Kiên",
+    "work_email": "kien.nguyen@example.test",
+    "phone": "0914922263",
+    "department": "Phòng Kế toán",
+    "position": "Trưởng phòng",
+    "start_date": "2025-11-21",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP048",
+    "full_name": "Phạm Bảo Khánh",
+    "work_email": "khanh.pham@example.test",
+    "phone": "+84910380112",
+    "department": "Phòng Nhân sự",
+    "position": "Nhân viên",
+    "start_date": "2026-01-21",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP049",
+    "full_name": "Lại Thị Liên",
+    "work_email": "lien.lai@example.test",
+    "phone": null,
+    "department": "Phòng Marketing",
+    "position": "Giám đốc",
+    "start_date": "2026-03-23",
+    "status": "active"
+  },
+  {
+    "employee_code": "EMP050",
+    "full_name": "Mạc Văn Toàn",
+    "work_email": "toan.mac@example.test",
+    "phone": "0915236450",
+    "department": "Phòng Hành chính",
+    "position": "Chuyên viên",
+    "start_date": "2026-05-23",
+    "status": "active"
+  }
+]
