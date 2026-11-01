@@ -4,7 +4,7 @@
 | --- | --- |
 | Step | Workflow Step 8, Kick-off (`docs/process/ai-native-sdlc-workflow.md` section 4) |
 | Author | Dev Lead (conventions, branching, Definition of Done reference), 2026-11-01. The PM/SM writes the ceremonies section |
-| Status | Draft for Owner approval, input to G3. Frozen with the baseline at Step 9 (tag `baseline-1`) |
+| Status | Baseline 1 (G3 approved 2026-11-01), frozen by tag `baseline-1`; changes only through a Change Request (`docs/project-plan.md` section 5) |
 | Produces | This file, `CLAUDE.md` v1, `AGENTS.md` v1 |
 
 ## Purpose and inputs

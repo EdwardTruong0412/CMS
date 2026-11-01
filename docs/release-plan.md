@@ -4,7 +4,7 @@
 | --- | --- |
 | Source | `docs/backlog.md` (stories US01 to US41), `docs/intent/intent-001.md` section 8 (done-criteria DC1 to DC4), `docs/specs/spec-001.md` |
 | Author | Product Owner, workflow Step 5, 2026-11-01 |
-| Status | Proposal for the Owner, input to G3. The grouping and order are the Product Owner's proposal; the Owner decides. |
+| Status | Baseline 1 (G3 approved 2026-11-01), frozen by tag `baseline-1`; changes only through a Change Request (`docs/project-plan.md` section 5) |
 
 Releases 1 to 3 here are delivery increments of the scope that intent-001 calls "Release 1" (backlog BL-D7). The project is done only when all three are done.
 

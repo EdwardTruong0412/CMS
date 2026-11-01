@@ -4,7 +4,7 @@
 | --- | --- |
 | Source | `docs/intent/intent-001.md`; criteria and NFR in `docs/specs/spec-001.md`; functions in `docs/specs/function-list.md` |
 | Author | Product Owner, workflow Step 5, 2026-11-01 |
-| Status | Proposal for the Owner, input to G3. The priority order below is the Product Owner's proposal; the final order is the Owner's call. |
+| Status | Baseline 1 (G3 approved 2026-11-01), frozen by tag `baseline-1`; changes only through a Change Request (`docs/project-plan.md` section 5) |
 | PRD | None for intent-001 (decided in the intent), so each story line links to its detail section in this file |
 
 Coverage: 183 of 183 criteria assigned, each to exactly one story (checked on 2026-11-01 by counting the criterion IDs in the "Delivers" lines, see Decisions log BL-D1).

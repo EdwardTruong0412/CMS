@@ -4,7 +4,7 @@
 | --- | --- |
 | Step | Workflow Step 6 (`docs/process/ai-native-sdlc-workflow.md` section 3) |
 | Author | PM/SM, 2026-11-01 |
-| Status | Proposal for the Owner, input to G3 |
+| Status | Baseline 1 (G3 approved 2026-11-01), frozen by tag `baseline-1`; changes only through a Change Request (`docs/project-plan.md` section 5) |
 
 Legend: **R** = Review, **A** = Approve (exactly one per row), **D** = Do, **I** = Inform, **O** = Observe. Blank means not involved.
 
