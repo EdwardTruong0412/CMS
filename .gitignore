@@ -7,3 +7,6 @@
 
 # /story run state (the record is committed under reports/stories/)
 /factory/stories/
+
+# Local process visuals (dashboards, diagrams), not tracked
+/docs/process/visuals/
