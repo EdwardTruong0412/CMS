@@ -12,6 +12,14 @@ These rules apply to the main session and every agent: PM/Scrum Master, Product 
 3. **No commit without the Owner's review.** Before any `git commit`, show the Owner the staged diff (`git diff --staged --stat` plus the diff) and the full commit message. Commit only after the Owner approves. Every commit message follows `.gitmessage` at the repo root.
    Why: git history is the audit trail; each commit records what the Owner saw and approved.
 
+### Story runs (Owner decision, 2026-11-01)
+
+A story run (`/story <story>`, `.claude/skills/story/SKILL.md`) is the one exception to rules 1 to 3:
+
+- **Rule 1:** the `approver` agent may approve the story's merge into `develop` (gate G5) when nothing on its escalation list applies. Everything it escalates comes to the Owner, and the Owner still approves every other gate, including G6 for every merged story.
+- **Rule 2:** the Owner typing `/story <story>` approves the whole run as the skill describes it: worktree, Dev rounds, reviews, tests, commits, pushing the story branch, the PR and its merge. Nothing outside the skill is approved by it. Deployment is never part of a run; the Owner runs CD by hand.
+- **Rule 3:** inside a run, the coordinator commits the Dev's proposed commits on the story branch without a separate Owner review; the review lenses and the approver review them instead. Messages still follow `.gitmessage`. All other commits need the Owner's review.
+
 ## Branches
 
 4. **One branch per feature, created before implementation.** Before any implementation work for a story (tests or code), the Dev Lead creates `feature/<story>_<summary>` from `develop`, for example `feature/US01_user_list`. QA's tests and the Dev's code both go on that branch. Never implement on `develop` or `main`.

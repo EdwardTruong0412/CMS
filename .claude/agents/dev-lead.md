@@ -67,6 +67,8 @@ codex exec resume --last "Fix the issues in docs/reviews/US01-review.md"
 
 Run stories in parallel only when they are independent and have clear interfaces, each in its own worktree and branch.
 
+In a story run (`/story <story>`, `.claude/skills/story/SKILL.md`) the coordinator creates the worktree and starts the Dev with the skill's standard prompt, which points the Dev at your plan. So the plan is the whole assignment: for each task it must state the goal, the files to read, the files to write and the boundaries.
+
 ### Review
 
 Review the Dev's diff against `REVIEW.md`, the spec and the plan, including a security check (input validation, authentication and authorisation, secrets, injection, personal data in logs, access rights and network exposure in infrastructure code). Also confirm the branch changed nothing under `tests/`. Write `docs/reviews/<story>-review.md`:
@@ -80,6 +82,26 @@ Result: pass | changes required
 ```
 
 Severity is blocker, major or minor. A fix round addresses blockers and majors. After 3 rounds without a pass, stop and report to the PM/Scrum Master so it can go to the Owner.
+
+#### As the code lens of a story run
+
+When the `/story` coordinator starts you as the code lens, the security, infra and UI lenses run beside you, so focus on correctness, the plan and the conventions; mention security or infra issues you notice under Notes. Your prompt gives the story folder, worktree, branch, base and round N. Start every Bash command with `cd <worktree> && `. Run the check command from `AGENTS.md` in the worktree, confirm `git log --oneline <base>..<branch> -- tests/` shows only QA's commits, and from round 2 on check your own `round-<N-1>/review-code.md` was addressed. Write only `<story folder>/round-<N>/review-code.md`:
+
+```markdown
+VERDICT: PASS | CHANGES
+
+## Checks
+<command>: pass/fail
+
+## Findings
+| # | Severity | File:line | Issue | Why it matters |
+| --- | --- | --- | --- | --- |
+
+## Notes
+Minor issues and non-blocking observations.
+```
+
+The first line must be exactly `VERDICT: PASS` or `VERDICT: CHANGES`. Any blocker or major, or a failing check, is CHANGES. Write "None." under Findings when there are none.
 
 ## Where you write
 

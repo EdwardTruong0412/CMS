@@ -1,7 +1,7 @@
 name: Protect tests
 
-# tests/ is owned by QA. A Dev branch (feat/<story>-<dev>) must make QA's tests
-# pass by changing code, so a pull request from one may not change anything in tests/.
+# tests/ is owned by QA. On a story branch (feature/<story>_<summary>) QA commits the tests;
+# the Dev makes them pass by changing code, so no other commit may change tests/.
 
 on:
   pull_request:
@@ -11,21 +11,32 @@ permissions:
 
 jobs:
   protect-tests:
-    if: startsWith(github.head_ref, 'feat/')
+    if: startsWith(github.head_ref, 'feature/')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Reject changes to tests/ from a Dev branch
+      - name: Allow tests/ changes only in QA's test commits
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          changed="$(git diff --name-only "$BASE_SHA...$HEAD_SHA" -- tests/)"
-          if [ -n "$changed" ]; then
-            echo "::error::Dev branches may not change tests/. Changed files:"
-            echo "$changed"
-            exit 1
-          fi
-          echo "No changes under tests/."
+          # QA commits its tests on the story branch as "test(...)" commits that touch
+          # only tests/ and testdata/mock/. Any other commit that changes tests/ fails.
+          bad=0
+          for sha in $(git rev-list "$(git merge-base "$BASE_SHA" "$HEAD_SHA")..$HEAD_SHA"); do
+            files="$(git diff-tree --no-commit-id --name-only -r "$sha")"
+            echo "$files" | grep -q '^tests/' || continue
+            subject="$(git log -1 --format=%s "$sha")"
+            other="$(echo "$files" | grep -v -e '^tests/' -e '^testdata/mock/' || true)"
+            if ! echo "$subject" | grep -q '^test('; then
+              echo "::error::$sha changes tests/ but is not a test(...) commit: $subject"
+              bad=1
+            elif [ -n "$other" ]; then
+              echo "::error::$sha is a test commit but also changes: $other"
+              bad=1
+            fi
+          done
+          [ "$bad" -eq 0 ] && echo "tests/ changed only in QA test commits."
+          exit "$bad"
