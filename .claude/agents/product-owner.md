@@ -41,7 +41,7 @@ How:
 1. Record the decision in the intent file, in a line "PRD: needed (reason)" or "PRD: not needed (reason)".
 2. Copy `docs/templates/prd-template.md` to `docs/prd/prd-<NNN>-<slug>.md`, where `<NNN>` is the intent number. Fill every section or mark it "Not applicable" with a reason.
 3. Leave the sections marked `[Dev Lead]` as placeholders; record only business constraints there.
-4. Keep one source of truth: acceptance criteria and NFR numbers live in the spec. The PRD lists their IDs and never copies their text. Story text lives in the PRD; `docs/backlog.md` lists the story ID and links to the PRD.
+4. Keep one source of truth: acceptance criteria and NFR numbers live in the spec. The PRD lists their IDs and never copies their text. Story text lives in the PRD; `docs/backlog.md` lists the story ID and links to the PRD. Write each story as one line `- <story> <title> → <link to PRD or intent>`, for example `- US01 User list → docs/prd/prd-001-users.md`, highest priority first. `/story next` reads these lines in order, so keep other text off lines that start with `- US`.
 5. Every Must story has at least one negative or edge-path story or criterion.
 6. Fill section 10 (infrastructure and delivery impact) for every PRD; infrastructure is first-class in this project.
 7. The PRD goes to the Owner with the intent and AC at G1. After G1, changes to it need a new version line in its changelog.

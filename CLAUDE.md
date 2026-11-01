@@ -258,4 +258,4 @@ Always reference design documents when implementing significant infrastructure c
 - Branch naming follows format: `feature/<story>_<summary>` (for example `feature/US01_user_list`), one branch per feature, created before implementation
 - Global rules for every agent: `.claude/rules/global.md` (Owner approval before any action and any commit; commit messages follow `.gitmessage`)
 - Merges to `develop` do not deploy; the Owner runs the CD workflows by hand
-- Story runs: `/story <story>` (`.claude/skills/story/SKILL.md`) builds, reviews, tests and, on the approver's `APPROVE`, merges one story's PR into `develop`. Board: `cd factory && python3 -m http.server`, then open `dashboard.html`
+- Story runs: `/story <story>` (`.claude/skills/story/SKILL.md`) builds, reviews, tests and, on the approver's `APPROVE`, merges one story's PR into `develop`. `/story next` picks the next ready story from `docs/backlog.md`, claims it and asks the Owner to confirm, so parallel sessions never take the same story. Board: `cd factory && python3 -m http.server`, then open `dashboard.html`

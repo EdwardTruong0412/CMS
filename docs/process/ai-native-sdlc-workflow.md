@@ -218,6 +218,7 @@ Dev (Codex) → coordinator commits → [code, security, infra, ui?] in parallel
 
 - Every agent file starts with a machine-readable line (`STATUS:`, `VERDICT:`, `RESULT:`, `APPROVE`/`ESCALATE`), so the coordinator never interprets prose.
 - Run state lives in `factory/stories/<story>/` (gitignored, shown by `factory/dashboard.html`); the record is committed with the story under `reports/stories/<story>/`.
+- `/story next` picks the highest-priority ready story in `docs/backlog.md` that no session has claimed, claims it, and asks you to confirm before the run starts. To run independent stories in parallel (section 6.4), open one session per story and type `/story next` in each; the claim keeps two sessions off the same story.
 - The approver escalates governance, pipeline, singleton/group layer, exposure and IAM, stateful destroy/replace, cost, destructive migrations, identity code, new dependencies and scope changes. You still review every merged story at G6.
 
 ### 6.4 Running stories in parallel
