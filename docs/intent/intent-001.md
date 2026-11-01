@@ -147,7 +147,7 @@ The measurable rules (delays, limits, temporary passwords, message wording) are 
 The project is done when all four are true:
 
 1. **Acceptance tests:** all acceptance tests pass on `dev01`.
-2. **One real timed cycle is observed:** automatic stop at 18:00, "closed" page out of hours, automatic start at 08:45 ICT the next weekday, after which an admin can log in and list employees. Being usable around 09:00 is best effort: the time is recorded, and there is no hard pass/fail deadline.
+2. **One timed cycle is observed** (with a test schedule set a few minutes ahead, Owner decision OQ-1 of 2026-11-01; the schedule is then reset to 18:00 and 08:45 ICT): automatic stop, "closed" page while stopped, automatic start, after which an admin can log in and list employees. Being usable around 09:00 is best effort: the time is recorded, and there is no hard pass/fail deadline.
 3. **Full verification:** the full-sizing profile (2-6 ECS tasks, Multi-AZ RDS), a load check with 50 employees' worth of data, and alarm tests. The load check threshold is a 95th percentile response time under 2 seconds (Q-O1).
 4. **Teardown:** all AWS resources are destroyed (env, then group, then singleton) and the clean-up checklist is completed.
 
@@ -210,3 +210,4 @@ Still open for the Owner, because only the Owner holds the value (details in the
 | 2026-10-31 | Q-O37 answered by the Owner: domain `imaprof.ink`; only `cms.imaprof.ink` is delegated to Route 53. |
 | 2026-10-31 | Q-O38 answered by the Owner: alert address provided, kept outside the repository (never committed). |
 | 2026-11-01 | Constraint in section 6.4 changed by the Owner (Q-O57): AWS Budget alert $2 instead of $10; env and group destroyed at the end of every check session. Section 9.2 gained a Status column (Dev Lead, Step 4b). | Owner's answer at G2 |
+| 2026-11-01 | Done-criterion 2 (section 8) changed by the Owner (OQ-1): the timed cycle is observed with a test schedule set a few minutes ahead instead of the real 18:00 and 08:45 times. | Owner's answer at Step 5 |
