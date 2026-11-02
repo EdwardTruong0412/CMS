@@ -24,9 +24,8 @@ It runs every step below in this order, stops at the first failure and exits non
 | Web | `src/web` | `npm run lint`, `npm run typecheck` (`tsc -b`, no emit), `npm run build` |
 | Terraform | repo root | `terraform fmt -check -recursive`, `tflint --init`, `tflint --recursive --config "$(CURDIR)/.tflint.hcl"` |
 
-- Dependencies are installed beforehand: API dev tools (ruff, mypy, pytest) are declared in `src/api/pyproject.toml`; the web uses `npm ci` with the committed `package-lock.json`; Terraform and tflint come from `make bootstrap`.
+- Dependencies are installed beforehand with `make deps`. It creates `src/api/.venv` with Python 3.13, installs `src/api` with its `dev` extra (ruff, mypy, pytest, httpx), and runs `npm ci` in `src/web`. Terraform (from `.terraform-version`), tflint, trivy and Python 3.13 come from `make bootstrap`. `make check` runs `tflint` with `HOME` set to `.cache/home` inside the repository, so it works inside the Codex sandbox.
 - `terraform validate`, `terraform plan` and Trivy need provider downloads or AWS access, so they run in the pull-request checks (`CLAUDE.md`, "GitHub Actions Workflows"), not in `make check`.
-- If the `check` target does not exist yet, creating it is a task of the first story's plan. Until then, run the steps above by hand.
 
 ## Conventions
 
@@ -109,7 +108,7 @@ It runs every step below in this order, stops at the first failure and exits non
 
 ### Tests (`tests/`, owned by QA; read-only for Devs)
 
-- Layout (KO-9): `tests/api/` (pytest against the API, local PostgreSQL), `tests/infra/` (pytest that reads repository files only: Terraform, workflows, Dockerfile; no AWS access), `tests/web/` (UI tests, runner chosen by the first UI story plan, proposal Vitest), `tests/dev01/` (checks run by QA in a dev01 session; they need AWS and network and are not part of `make check`).
+- Layout (KO-9): `tests/api/` (pytest against the API, local PostgreSQL), `tests/infra/` (pytest that reads repository files only: Terraform, workflows, Dockerfile; no AWS access), `tests/web/` (UI tests, runner chosen by the first UI story plan, proposal Vitest), `tests/image/` (checks of the built API image that need a local Docker daemon; run by QA in the test round, not part of `make check`), `tests/dev01/` (checks run by QA in a dev01 session; they need AWS and network and are not part of `make check`).
 - Files `test_<area>.py`; each test name starts with the criterion ID it proves, lower case, for example `test_lgn_ac03_unauthenticated_request_refused`. Mock data only from `testdata/mock/`.
 
 ## Rules for all agents
