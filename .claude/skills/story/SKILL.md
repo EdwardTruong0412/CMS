@@ -143,9 +143,14 @@ Below, `<paths>` stands for that sentence.
 2. Start the Dev from the worktree with `run_in_background`, and wait for its
    completion notice (a build can outlast a foreground command):
    ```bash
-   cd <worktree> && codex exec --sandbox workspace-write \
+   cd <worktree> && PIP_CACHE_DIR="$PWD/.cache/pip" npm_config_cache="$PWD/.cache/npm" \
+     TFLINT_PLUGIN_DIR="$PWD/.cache/tflint" \
+     codex exec --sandbox workspace-write -c sandbox_workspace_write.network_access=true \
      -o <repo>/factory/stories/<story>/round-<N>/handoff-dev.md "<dev prompt>"
    ```
+   Network access lets `make check` download packages and the tflint plugin;
+   the caches stay inside the worktree (git-ignored `.cache/`) because the
+   sandbox cannot write to the home directory (OQ-S1-2, Sprint 1 Planning).
    The `<dev prompt>` for round 1:
    `You are Dev <k>. Read AGENTS.md and docs/process/agents/dev-<k>.md. Story <story>, build round 1. Your tasks are in docs/plans/<story>.plan.md. Do not edit anything in tests/. Run the check command from AGENTS.md until it passes. Do not commit: propose one commit per task, and together the proposed commits must cover every file you changed. Your final message is the handoff report; its first line must be exactly STATUS: READY or STATUS: BLOCKED.`
    For a fix round, append:
@@ -179,7 +184,7 @@ Below, `<paths>` stands for that sentence.
    prints nothing.
 2. Start the active reviewers **in one message**, so they run in parallel. Each
    gets `<paths> Review round N.`; tell `dev-lead` also
-   `You are the code lens of a story run: write only round-<N>/review-code.md in the story folder.`
+   `You are the code lens of a story run: review against REVIEW.md and write only round-<N>/review-code.md in the story folder.`
 3. **WAIT FOR ALL.** Each time a reviewer finishes, read the first line of its
    file and write the verdict to `story.json` straight away, so the dashboard
    fills in as verdicts land. The step is done only when every active

@@ -29,7 +29,7 @@ Install required tools using the Makefile:
 make bootstrap # Installs tfenv, trivy, tflint, drawio
 ```
 
-The `Makefile` is still empty: the `bootstrap` and `check` targets are added by the first story (US01).
+The `Makefile` is still empty: the `bootstrap` and `check` targets are added by the first story (US01a).
 
 Terraform version: specified in `.terraform-version`
 
