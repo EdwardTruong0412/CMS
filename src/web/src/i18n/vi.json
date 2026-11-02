@@ -1,0 +1,12 @@
+{
+  "app": {
+    "title": "CMS",
+    "loading": "Đang tải..."
+  },
+  "home": {
+    "running": "CMS đang hoạt động."
+  },
+  "closed": {
+    "message": "CMS đang tạm đóng. Giờ làm việc: Thứ Hai đến Thứ Sáu, 09:00-18:00 (ICT)."
+  }
+}
