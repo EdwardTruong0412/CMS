@@ -9,7 +9,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 RUN groupadd --system --gid 10001 cms \
  && useradd --system --uid 10001 --gid 10001 --no-create-home \
-      --home-dir /nonexistent --shell /usr/sbin/nologin cms
+      --home-dir /nonexistent --shell /usr/sbin/nologin cms \
+ && python -m pip uninstall -y pip
 COPY --from=builder /install /usr/local
 WORKDIR /app
 USER 10001:10001
