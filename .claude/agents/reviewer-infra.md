@@ -78,7 +78,7 @@ For a changed Dockerfile, build it if Docker is available
 - **Pipeline:** jobs use OIDC, minimal `permissions`, pinned action versions;
   migrations run as the Alembic task before the ECS update; CD stays manual.
 - **Cost:** lean sizing in `dev01.tfvars`; nothing always-on that the spec does
-  not need; note anything that moves spend toward the $10 budget.
+  not need; note anything that moves spend toward the $2 monthly budget alert (Q-O57).
 - **Naming:** no em dashes in AWS resource names or descriptions.
 - **Teardown:** everything new is destroyable by the env destroy workflow.
 
