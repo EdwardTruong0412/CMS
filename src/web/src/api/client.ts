@@ -35,6 +35,21 @@ function systemClosed(): never {
   throw new SystemClosedError();
 }
 
+function isApiErrorItem(value: unknown): value is ApiErrorItem {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "field" in value &&
+    (value.field === null || typeof value.field === "string") &&
+    "code" in value &&
+    typeof value.code === "string" &&
+    "params" in value &&
+    typeof value.params === "object" &&
+    value.params !== null &&
+    !Array.isArray(value.params)
+  );
+}
+
 export async function apiRequest<T>(
   path: `/api/${string}`,
   options?: {
@@ -62,8 +77,21 @@ export async function apiRequest<T>(
   }
   if (response.status === 503) return systemClosed();
   if (!response.ok) {
-    const payload: unknown = await response.json();
-    const { errors } = payload as { errors: ApiErrorItem[] };
+    let errors: ApiErrorItem[] = [];
+    try {
+      const payload: unknown = await response.json();
+      if (
+        typeof payload === "object" &&
+        payload !== null &&
+        "errors" in payload &&
+        Array.isArray(payload.errors) &&
+        payload.errors.every(isApiErrorItem)
+      ) {
+        errors = payload.errors;
+      }
+    } catch {
+      // Proxies can return HTML or an empty body instead of API JSON.
+    }
     throw new ApiError(response.status, errors);
   }
   if (response.status === 204) return undefined as T;
