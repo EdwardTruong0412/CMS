@@ -4,14 +4,16 @@
 | --- | --- |
 | Source | `docs/intent/intent-001.md`; criteria and NFR in `docs/specs/spec-001.md`; functions in `docs/specs/function-list.md` |
 | Author | Product Owner, workflow Step 5, 2026-11-01 |
-| Status | Baseline 1 (G3 approved 2026-11-01), frozen by tag `baseline-1`; changes only through a Change Request (`docs/project-plan.md` section 5) |
+| Status | Baseline 1 (G3 approved 2026-11-01), frozen by tag `baseline-1`; changes only through a Change Request (`docs/project-plan.md` section 5). US01 split into US01a, US01b and US01c at refinement on 2026-11-02, inside the baseline and without a CR (BL-D10) |
 | PRD | None for intent-001 (decided in the intent), so each story line links to its detail section in this file |
 
-Coverage: 183 of 183 criteria assigned, each to exactly one story (checked on 2026-11-01 by counting the criterion IDs in the "Delivers" lines, see Decisions log BL-D1).
+Coverage: 183 of 183 criteria assigned, each to exactly one story (checked on 2026-11-02 by counting the criterion IDs in the "Delivers" lines: 183 IDs, 183 distinct; see Decisions log BL-D1 and BL-D10).
 
 ## Stories in priority order
 
-- US01 Walking skeleton on dev01 → docs/backlog.md#us01
+- US01a Repo tooling and app skeleton → docs/backlog.md#us01a
+- US01b State bucket, singleton and group → docs/backlog.md#us01b
+- US01c Env layer serves the app over HTTPS → docs/backlog.md#us01c
 - US02 Budget and alert email reach the Owner → docs/backlog.md#us02
 - US03 Owner ends a session by destroying env and group → docs/backlog.md#us03
 - US04 Developer runs the whole stack locally → docs/backlog.md#us04
@@ -53,7 +55,7 @@ Coverage: 183 of 183 criteria assigned, each to exactly one story (checked on 20
 - US40 Final teardown leaves nothing behind → docs/backlog.md#us40
 - US41 Owner recovers admin access (break-glass) → docs/backlog.md#us41
 
-Releases (detail in `docs/release-plan.md`): Release 1 is US01 to US18, Release 2 is US19 to US33, Release 3 is US34 to US41.
+Releases (detail in `docs/release-plan.md`): Release 1 is US01a to US18 (US01a, US01b and US01c replace US01, BL-D10), Release 2 is US19 to US33, Release 3 is US34 to US41.
 
 ## How to read the story sections
 
@@ -64,15 +66,48 @@ Releases (detail in `docs/release-plan.md`): Release 1 is US01 to US18, Release 
 - **Priority** is MoSCoW (BL-D3). Release is the release of `docs/release-plan.md`.
 - Stories describe what the user or the Owner can do. They are not split into technical tasks; that happens at Sprint Planning (workflow section 6.2).
 
-<a id="us01"></a>
-## US01 Walking skeleton on dev01
+<a id="us01a"></a>
+## US01a Repo tooling and app skeleton
 
-As the Owner, I want to bootstrap the Terraform state bucket and build the singleton, group and env layers in the lean profile from the repository, so that the app hostname serves the UI over HTTPS and the API answers its health and status checks from the database, and every later story has a running system to build on.
+As a developer, I want `make bootstrap` and `make check` in the repository, an API and a web UI skeleton, and a multi-stage Dockerfile whose image is based on `python:3.13-slim` and runs as a non-root user, so that every later story starts from code that is checked with one command and from a hardened container image, without needing AWS.
 
-Delivers: `IAC-AC03`, `IAC-AC04`, `IAC-AC05`, `IAC-AC06`, `IAC-AC07`, `IAC-AC08`, `IAC-AC12`, `IAC-AC14`, `NET-AC01`, `NET-AC02`, `NET-AC03`, `NET-AC04`, `NET-AC07`, `NET-AC08`, `NET-AC09`, `NET-AC10`, `NET-AC11`, `CNT-AC01`, `CNT-AC02`, `CNT-AC03`, `SEC-AC01`, `SEC-AC02`, `SCALE-AC01`
+Delivers: `CNT-AC01`, `CNT-AC02`
 
 Also checked in:
-- IAC-AC04, IAC-AC12, IAC-AC14: every later story that adds or changes Terraform (US02, US03, US05 to US07, US11, US12, US14, US15, US30, US32 to US34, US41); IAC-AC12 for the full profile in US34; IAC-AC14 also in US40 (tag search).
+- CNT-AC01, CNT-AC02: US01c (the first image pushed to ECR and run on dev01; test point of CNT-AC02: the ECS task definition does not override the user to root), US06 (every image the CD run builds).
+
+Functions: F-SYS-01, F-SYS-02
+Depends on: none
+Priority: Must   Size: M   Release: 1   Source: docs/intent/intent-001.md
+
+Notes: first part of the former US01 (BL-D10). No AWS resource is created. This part also writes `.terraform-version`, which local tooling needs; IAC-AC01 stays with US05, where every workflow uses that version (S1-PO-D4, SP1-D5).
+
+<a id="us01b"></a>
+## US01b State bucket, singleton and group
+
+As the Owner, I want to bootstrap the versioned Terraform state bucket with a documented procedure and build the singleton and group layers in the lean profile from documented child modules, with state locking and one common project tag, so that the hosted zone, the container registry and the three-tier network across two availability zones exist for the env layer and every later story.
+
+Delivers: `IAC-AC03`, `IAC-AC04`, `IAC-AC07`, `IAC-AC08`, `IAC-AC14`, `NET-AC01`, `NET-AC02`
+
+Also checked in:
+- IAC-AC03, IAC-AC04, IAC-AC14: US01c (the env root and its modules) and every later story that adds or changes Terraform (US02, US03, US05 to US07, US11, US12, US14, US15, US30, US32 to US34, US41); IAC-AC14 also in US40 (tag search).
+- IAC-AC07: US01c (the env layer with workspace `dev01`).
+
+Functions: F-OPS-08
+Depends on: US01a
+Priority: Must   Size: M   Release: 1   Source: docs/intent/intent-001.md
+
+Notes: second part of the former US01 (BL-D10). After the merge the Owner runs the bootstrap procedure, applies singleton with the documented local commands and adds the NS records at Namecheap at once, so that DNS has propagated before the env layer of US01c is applied.
+
+<a id="us01c"></a>
+## US01c Env layer serves the app over HTTPS
+
+As the Owner, I want to build the env layer in the lean profile on top of singleton and group, so that the app hostname serves the UI over HTTPS through CloudFront from a private bucket, the API in the private subnets answers its health and status checks from the database in the isolated subnets, every layer plans clean after its apply, and every later story has a running system on dev01 to build on.
+
+Delivers: `IAC-AC05`, `IAC-AC06`, `IAC-AC12`, `NET-AC03`, `NET-AC04`, `NET-AC07`, `NET-AC08`, `NET-AC09`, `NET-AC10`, `NET-AC11`, `CNT-AC03`, `SEC-AC01`, `SEC-AC02`, `SCALE-AC01`
+
+Also checked in:
+- IAC-AC12: every later story that adds or changes Terraform (US02, US03, US05 to US07, US11, US12, US14, US15, US30, US32 to US34, US41); for the full profile in US34.
 - IAC-AC05: US02 (budget reaches the alert topic without reading group state), US39.
 - NET-AC07: US14 (CloudTrail bucket), US15 (access-log bucket).
 - NET-AC08: US09 (test point: an unauthenticated data request under `/api/` gets the API's refusal).
@@ -80,10 +115,10 @@ Also checked in:
 - SCALE-AC01: US34 (return from full to lean).
 
 Functions: F-SYS-01, F-SYS-02, F-OPS-08
-Depends on: none
+Depends on: US01a, US01b
 Priority: Must   Size: L   Release: 1   Source: docs/intent/intent-001.md
 
-Notes: thin on purpose. No CI/CD, WAF, customer managed keys, monitoring or schedule yet; each comes in its own story. Until US05 and US06 exist the Owner applies the layers and pushes the first image with documented local commands. This is the largest story; if Sprint Planning finds it over 3 days, the Product Owner splits it at refinement.
+Notes: third part of the former US01 (BL-D10), and at the upper size limit. Thin on purpose: no CI/CD, WAF, customer managed keys, monitoring or schedule yet; each comes in its own story. Until US05 and US06 exist the Owner applies the layers and pushes the first image with documented local commands, and ends each session by destroying env, then group, the same way. The dev01 checks of US01a to US01c run together in the first check session.
 
 <a id="us02"></a>
 ## US02 Budget and alert email reach the Owner
@@ -96,7 +131,7 @@ Also checked in:
 - COST-AC01: US37 (the budget path stays wired), US40 (teardown report says whether a notification fired).
 
 Functions: F-OPS-06
-Depends on: US01
+Depends on: US01b
 Priority: Must   Size: S   Release: 1   Source: docs/intent/intent-001.md
 
 <a id="us03"></a>
@@ -107,7 +142,7 @@ As the Owner, I want manual-only workflows to destroy the env and group layers, 
 Delivers: `CICD-AC15`
 
 Functions: F-OPS-10
-Depends on: US01
+Depends on: US01b
 Priority: Must   Size: S   Release: 1   Source: docs/intent/intent-001.md
 
 Notes: the complete teardown with singleton, the state bucket and the clean-up checklist is US40.
@@ -120,7 +155,7 @@ As a developer, I want `docker compose up` to start the API, PostgreSQL and the 
 Delivers: `CNT-AC06`
 
 Functions: F-OPS-11
-Depends on: US01
+Depends on: US01a
 Priority: Must   Size: S   Release: 1   Source: docs/intent/intent-001.md
 
 <a id="us05"></a>
@@ -134,7 +169,7 @@ Also checked in:
 - CICD-AC01, CICD-AC02, IAC-AC10, IAC-AC11: every later pull request.
 
 Functions: F-OPS-05
-Depends on: US01
+Depends on: US01a, US01b, US01c
 Priority: Must   Size: M   Release: 1   Source: docs/intent/intent-001.md
 
 <a id="us06"></a>
@@ -166,7 +201,7 @@ Also checked in:
 - SETUP-AC02: US08, US39 (token created at each deployment).
 
 Functions: F-OPS-08
-Depends on: US01
+Depends on: US01c
 Priority: Must   Size: M   Release: 1   Source: docs/intent/intent-001.md
 
 <a id="us08"></a>
@@ -182,7 +217,7 @@ Also checked in:
 - SETUP-AC05: US30 (after a stop/start cycle), US39 (after a redeployment on a rebuilt system).
 
 Functions: F-SET-01, F-SYS-01
-Depends on: US07
+Depends on: US01a, US04 (build and local tests); US07 (dev01 check, SP1-D4 and SP1-D13)
 Priority: Must   Size: M   Release: 1   Source: docs/intent/intent-001.md
 
 <a id="us09"></a>
@@ -227,7 +262,7 @@ Also checked in:
 - NET-AC05: US39 (inventory of the rebuilt account).
 
 Functions: F-OPS-08
-Depends on: US01
+Depends on: US01c
 Priority: Must   Size: M   Release: 1   Source: docs/intent/intent-001.md
 
 <a id="us12"></a>
@@ -241,7 +276,7 @@ Also checked in:
 - SEC-AC04: US13 (an ordinary login is not blocked), US17 (an ordinary employee-list request is not blocked).
 
 Functions: F-OPS-08
-Depends on: US01
+Depends on: US01c
 Priority: Must   Size: S   Release: 1   Source: docs/intent/intent-001.md
 
 <a id="us13"></a>
@@ -281,7 +316,7 @@ As the Owner, I want the API container logs in CloudWatch and the CloudFront and
 Delivers: `OBS-AC01`, `OBS-AC02`, `OBS-AC03`
 
 Functions: F-OPS-06
-Depends on: US01
+Depends on: US01c
 Priority: Must   Size: M   Release: 1   Source: docs/intent/intent-001.md
 
 <a id="us16"></a>
@@ -602,7 +637,7 @@ As the Owner, I want to rebuild the whole system from an account that holds only
 Delivers: `IAC-AC02`, `IAC-AC13`
 
 Functions: F-OPS-08
-Depends on: every infrastructure story (US01 to US03, US05 to US07, US11, US12, US14, US15, US30, US32, US33)
+Depends on: every infrastructure story (US01a to US01c, US02, US03, US05 to US07, US11, US12, US14, US15, US30, US32, US33)
 Priority: Must   Size: M   Release: 3   Source: docs/intent/intent-001.md
 
 Notes: needs a singleton destroy first, which is destructive and needs the Owner's explicit approval. A new hosted zone gets new name servers, so the Namecheap NS records change and DNS propagation can delay the env build; the release plan schedules for this.
@@ -647,12 +682,13 @@ Backlog-only choices made by the Product Owner under workflow section 8 "Decisio
 | BL-D1 | Coverage is checked by counting the criterion IDs written in backticks on the "Delivers" lines: 183 IDs, 183 distinct, matching the 17 group totals of the spec summary. Criterion IDs are written in backticks nowhere else in this file. | Makes "each criterion in exactly one story" checkable mechanically | All stories |
 | BL-D2 | Assignment rule. A criterion belongs to the story that first delivers its behaviour. A cross-cutting criterion (a rule for every screen, operation or resource) belongs to the first story where it can be proven for what exists then, and later stories keep it ("Also checked in"). When one test point of a criterion needs a later capability, that test point runs in the later story named under "Also checked in". | Follows the coordinator's rule; keeps each criterion's owner clear while every story keeps earlier rules passing | All stories |
 | BL-D3 | Every story that owns a criterion is Must, because done-criterion 1 requires every acceptance test to pass and intent-001 places its whole scope in its Release 1. US41 owns none and is Could. The order of the list, not MoSCoW, carries the priority. | MoSCoW would otherwise suggest that approved scope is optional | All stories |
-| BL-D4 | Sizes: S about 1 day, M 1 to 2 days, L 2 to 3 days for one Dev in one `/story` run. No story is larger than L. US01, US06 and US32 are L. | Matches the one-to-three-day limit | All stories |
-| BL-D5 | US01 is the thinnest working slice on dev01 (UI and API through the app hostname, database reached). The budget and alert email (US02) and the session destroy workflows (US03) come straight after it, because under Q-O57 every session must end with env and group destroyed and cost alerts must exist before spending grows. | Owner's budget rule of 2026-11-01; infrastructure is first-class (Owner, 2026-10-14) | US01 to US03 |
+| BL-D4 | Sizes: S about 1 day, M 1 to 2 days, L 2 to 3 days for one Dev in one `/story` run. No story is larger than L. US01c, US06 and US32 are L (US01 was L until its split, BL-D10). | Matches the one-to-three-day limit | All stories |
+| BL-D5 | US01 is the thinnest working slice on dev01 (UI and API through the app hostname, database reached); since BL-D10 that slice is US01a to US01c together. The budget and alert email (US02) and the session destroy workflows (US03) come straight after it, because under Q-O57 every session must end with env and group destroyed and cost alerts must exist before spending grows. | Owner's budget rule of 2026-11-01; infrastructure is first-class (Owner, 2026-10-14) | US01a to US03 |
 | BL-D6 | US41 (break-glass recovery, Q-D15) is kept as a story with no criterion of its own and priority Could. Under Q-O57 the database is rebuilt every session and the first admin is created again by setup, so the recovery path matters only if a session's admin password is lost mid-session. No new criterion is added, because criteria live in the spec and were approved at G1. | Keeps the approved design traceable without changing the approved criteria | US41 |
 | BL-D7 | The release numbers 1 to 3 of `docs/release-plan.md` are delivery increments of the scope that intent-001 and the spec call "Release 1". Where a criterion says "In Release 1" it means the whole intent-001 scope. | Avoids reading the spec's "Release 1" as this plan's first increment | Release plan |
 | BL-D8 | The language story (US19) opens Release 2 rather than Release 1. Release 1 screens are already built on the English and Vietnamese message catalogues decided in D-DL8, so adding the switch later needs little rework. | Keeps Release 1 the smallest working, secure system | US19 |
 | BL-D9 | Loading the 50 mock employees into dev01 is part of US17, not a separate story. | Every session starts with an empty database (Q-O57); the list story is the first that needs the data | US17 |
+| BL-D10 | (2026-11-02) US01 is split into US01a Repo tooling and app skeleton (2 criteria, M), US01b State bucket, singleton and group (7, M) and US01c Env layer serves the app over HTTPS (14, L), following the Dev Lead's cut in the Sprint 1 Planning hand-off. Each of the 23 former US01 criteria is in exactly one part; the parts keep US01's place at the top of the order, Must and Release 1. The US01 "Also checked in" items moved with their criterion; items were added where a criterion's own text spans two parts (the ECS user check of CNT-AC02, and IAC-AC03, IAC-AC07 for the env layer). "Depends on: US01" lines now name the part each story needs: US02, US03 to US01b (group layer, layer paths); US04 to US01a; US05 to US01a, US01b, US01c (checks all three layers); US07, US11, US12, US15 to US01c (env resources); US39 to all three parts. US08's line names its build dependencies US01a and US04 and keeps US07 for its dev01 check (Dev Lead SP1-D4, SP1-D13). Coverage recounted on 2026-11-02: 183 IDs, 183 distinct. No scope, criterion, priority order or release changed. | Refinement provided for by the US01 note approved at G3 ("the Product Owner splits it at refinement"); Sprint 1 Planning OQ-S1-1, decided by the PM/SM under the Owner's delegation of 2026-11-02; no CR and no new tag | US01a, US01b, US01c, US02 to US05, US07, US08, US11, US12, US15, US39 |
 
 ## Open questions for the Owner
 
