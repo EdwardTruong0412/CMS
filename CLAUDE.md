@@ -53,6 +53,7 @@ src/
 tests/                      # QA-owned tests: api/, infra/, web/, dev01/ (layout in AGENTS.md)
 docs/specs/                 # Spec and Basic Design (spec-001.md), function list
 docs/plans/                 # Story plans with the detailed design (<story>.plan.md)
+docs/runbooks/              # Owner procedures: bootstrap, session, alert email (SP1-D2)
 docs/design/                # Other design documents
 ```
 

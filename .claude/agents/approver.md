@@ -70,7 +70,7 @@ ESCALATE if any of them fails, or if the change:
   secret or the Route 53 zone.
 - **Cost:** moves sizing toward `dev01_full.tfvars` values in `dev01.tfvars`,
   adds an always-on resource, or the infra review flags a cost increase against
-  the $10 budget.
+  the $2 monthly budget alert (Q-O57).
 - **Data:** an Alembic migration that drops or renames a column or table, or
   rewrites existing rows; a change to what personal data is stored, logged or
   returned (intent section 7).
