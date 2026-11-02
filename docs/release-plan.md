@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| Source | `docs/backlog.md` (stories US01 to US41), `docs/intent/intent-001.md` section 8 (done-criteria DC1 to DC4), `docs/specs/spec-001.md` |
+| Source | `docs/backlog.md` (stories US01a to US41), `docs/intent/intent-001.md` section 8 (done-criteria DC1 to DC4), `docs/specs/spec-001.md` |
 | Author | Product Owner, workflow Step 5, 2026-11-01 |
 | Status | Baseline 1 (G3 approved 2026-11-01), frozen by tag `baseline-1`; changes only through a Change Request (`docs/project-plan.md` section 5) |
 
@@ -27,12 +27,12 @@ Releases 1 to 3 here are delivery increments of the scope that intent-001 calls 
 
 **Goal.** The Owner can build dev01 from the repository, deliver a commit through checked pull requests and one CD run, and an admin can log in securely and keep employee, department and position records, behind TLS, WAF, CloudFront-only access, encrypted data and secrets, audit logging, threat alerts and cost alerts. Each session ends with env and group destroyed.
 
-**Stories (in order).** US01 Walking skeleton on dev01; US02 Budget and alert email; US03 Session destroy workflows; US04 Local run; US05 Pull-request checks; US06 CD run; US07 Secrets and encryption; US08 First admin setup; US09 Log in and log out; US10 Session time limits; US11 CloudFront-only access and TLS on every hop; US12 WAF; US13 Admin login protection; US14 Audit trail and threat alerts; US15 Logs; US16 View and add departments and positions; US17 Employee list and details; US18 Add an employee.
+**Stories (in order).** US01a Repo tooling and app skeleton; US01b State bucket, singleton and group; US01c Env layer serves the app over HTTPS; US02 Budget and alert email; US03 Session destroy workflows; US04 Local run; US05 Pull-request checks; US06 CD run; US07 Secrets and encryption; US08 First admin setup; US09 Log in and log out; US10 Session time limits; US11 CloudFront-only access and TLS on every hop; US12 WAF; US13 Admin login protection; US14 Audit trail and threat alerts; US15 Logs; US16 View and add departments and positions; US17 Employee list and details; US18 Add an employee.
 
-Parallel work is possible after US01: infrastructure stories (US02, US03, US05, US07, US11, US12, US14, US15) and the application chain (US04, then US08, US09, US16 to US18) touch different parts, within the limits of workflow section 6.4.
+Parallel work is possible after US01b (infrastructure) and US01a (application): infrastructure stories (US02, US03, US05, US07, US11, US12, US14, US15) and the application chain (US04, then US08, US09, US16 to US18) touch different parts, within the limits of workflow section 6.4.
 
 **Exit check.**
-- In one exit session on the lean profile, the acceptance tests of the 102 criteria owned by US01 to US18 pass on dev01, except the time-based test points listed under "Long verification session" below. This is the Release 1 part of DC1.
+- In one exit session on the lean profile, the acceptance tests of the 102 criteria owned by US01a to US18 pass on dev01, except the time-based test points listed under "Long verification session" below. This is the Release 1 part of DC1.
 - The session starts from singleton only and ends with env and group destroyed, and its cost is recorded.
 - No done-criterion is complete yet.
 
@@ -98,4 +98,4 @@ Decided after OQ-1 (D-PM3 in the spec): the hours-long timers are proven by auto
 | RP-D1 | Batch dev01 checks: one session per 3 to 5 merged stories that change dev01, plus one exit session per release. | Each session costs about $0.20 to $0.30 lean, and singleton already uses most of the $2 alert each month (OQ-2) | All releases |
 | RP-D2 | The start half of the schedule (start, closed page until usable, data after the cycle) is checked in the Release 3 verification session with the test schedule (OQ-1), not in Release 2. The weekend rule (no start on Saturday or Sunday) is checked from the schedule definition; no weekend is observed. | A test schedule avoids keeping the layers up overnight (OQ-1); observing a weekend would cost about three days of running layers | US30, US31, US38 |
 | RP-D3 | The rebuild proof (US39) destroys and rebuilds singleton before the verification session, with a pause for DNS propagation after the new NS records are set. | A new hosted zone gets new name servers; certificate validation waits for propagation | US39 |
-| RP-D4 | Release 1 is the 18 stories US01 to US18. Account management, the language switch, the schedule and alarms move to Release 2. | Smallest set where an admin can work securely end to end on dev01 and the Owner can deliver and destroy safely | Release 1, Release 2 |
+| RP-D4 | Release 1 is the 18 stories US01 to US18 (20 since the US01 split into US01a to US01c, BL-D10). Account management, the language switch, the schedule and alarms move to Release 2. | Smallest set where an admin can work securely end to end on dev01 and the Owner can deliver and destroy safely | Release 1, Release 2 |

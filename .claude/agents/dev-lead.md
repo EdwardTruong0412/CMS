@@ -85,7 +85,7 @@ Severity is blocker, major or minor. A fix round addresses blockers and majors. 
 
 #### As the code lens of a story run
 
-When the `/story` coordinator starts you as the code lens, the security, infra and UI lenses run beside you, so focus on correctness, the plan and the conventions; mention security or infra issues you notice under Notes. Your prompt gives the story folder, worktree, branch, base and round N. Start every Bash command with `cd <worktree> && `. Run the check command from `AGENTS.md` in the worktree, confirm `git log --oneline <base>..<branch> -- tests/` shows only QA's commits, and from round 2 on check your own `round-<N-1>/review-code.md` was addressed. Write only `<story folder>/round-<N>/review-code.md`:
+When the `/story` coordinator starts you as the code lens, the security, infra and UI lenses run beside you, so focus on correctness, the plan and the conventions, using the criteria RV-01 to RV-15 and the verdict rule in `REVIEW.md`; start each finding's Issue with its RV ID; mention security or infra issues you notice under Notes. Your prompt gives the story folder, worktree, branch, base and round N. Start every Bash command with `cd <worktree> && `. Run the check command from `AGENTS.md` in the worktree, confirm `git log --oneline <base>..<branch> -- tests/` shows only QA's commits, and from round 2 on check your own `round-<N-1>/review-code.md` was addressed. Write only `<story folder>/round-<N>/review-code.md`:
 
 ```markdown
 VERDICT: PASS | CHANGES

@@ -5,7 +5,7 @@
 | Step | Workflow Step 7 (`docs/process/ai-native-sdlc-workflow.md` sections 4, 6, 7 and 8) |
 | Author | PM/SM, 2026-11-01 (Step 7); updated for the baseline at Step 9, 2026-11-01 |
 | Status | Baseline 1 (Step 9), frozen by tag `baseline-1` after G3 approval; changes only through a Change Request (section 5) |
-| Scope | intent-001 as approved at G1 and G2: `docs/specs/spec-001.md` (183 criteria), `docs/backlog.md` (US01 to US41) and `docs/release-plan.md` (Releases 1 to 3) |
+| Scope | intent-001 as approved at G1 and G2: `docs/specs/spec-001.md` (183 criteria), `docs/backlog.md` (US01a to US41) and `docs/release-plan.md` (Releases 1 to 3) |
 
 ## 1. Schedule
 
@@ -13,9 +13,9 @@ Two-week sprints (workflow section 6). Sprint Review and Retrospective are on th
 
 | Milestone | Date | Content | Gate |
 | --- | --- | --- | --- |
-| Kick-off (Step 8) | Done 2026-11-01 (PR #8, merge `b58f91a`) | Conventions, branching, ceremonies and Sprint Review schedule (`docs/kickoff.md`, `CLAUDE.md` v1, `AGENTS.md` v1). The `.terraform-version` pin is delivered by US01 (IAC-AC01, KO-22) | |
+| Kick-off (Step 8) | Done 2026-11-01 (PR #8, merge `b58f91a`) | Conventions, branching, ceremonies and Sprint Review schedule (`docs/kickoff.md`, `CLAUDE.md` v1, `AGENTS.md` v1). The `.terraform-version` pin is delivered by US01a; IAC-AC01 is proven in US05 (KO-22) | |
 | Baseline (Step 9) | by 2026-11-06 | Tag `baseline-1` | G3 |
-| Sprint 1 | 2026-11-09 to 2026-11-20 | Release 1: US01 to US09 (walking skeleton, budget, teardown, local run, PR checks, CD, secrets, setup, login) | G4 to G6 per story |
+| Sprint 1 | 2026-11-09 to 2026-11-20 | Release 1: US01a to US01c, US02 to US09 (walking skeleton, budget, teardown, local run, PR checks, CD, secrets, setup, login) | G4 to G6 per story |
 | Sprint 2 | 2026-11-23 to 2026-12-04 | Release 1: US10 to US18, then the Release 1 exit session | G4 to G6 per story |
 | Sprint 3 | 2026-12-07 to 2026-12-18 | Release 2: US19 to US26 | G4 to G6 per story |
 | Sprint 4 | 2026-12-21 to 2027-01-01 | Release 2: US27 to US33, then the Release 2 exit sessions | G4 to G6 per story |

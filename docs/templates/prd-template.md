@@ -188,7 +188,7 @@ Release: <n>   Source: `docs/intent/intent-<NNN>.md`
 
 ## 13. Cost
 
-| Item | Lean sizing | Full sizing | Within $10 budget? |
+| Item | Lean sizing | Full sizing | Within the $2 budget alert (Q-O57)? |
 | --- | --- | --- | --- |
 
 <!-- Cost beyond the approved budget is an Owner question. -->

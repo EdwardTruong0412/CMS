@@ -13,3 +13,6 @@
 
 # Upstream software-factory template, kept locally for reference
 /software-factory-claude-code/
+
+# Package and plugin caches of Codex Dev runs inside a worktree (story skill)
+/.cache/
