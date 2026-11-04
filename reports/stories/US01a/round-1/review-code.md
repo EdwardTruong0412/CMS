@@ -1,0 +1,25 @@
+VERDICT: CHANGES
+
+## Checks
+make check: pass (exit 0; ruff check, ruff format --check, mypy, pytest 91 passed, npm run lint, typecheck, build, terraform fmt -check, tflint --init, tflint --recursive)
+tests untouched (git log origin/develop..feature/US01a_repo_tooling_app_skeleton -- tests/): pass, QA commits only: 3d414e1 (made before the Dev's first commit 106a1c8; no Dev commit touches tests/)
+git diff --check: pass
+migration round trip: not run: no migration in this change
+
+## Findings
+| # | Severity | File:line | Issue | Why it matters |
+| --- | --- | --- | --- | --- |
+| 1 | major | src/web/src/api/client.ts:64-67 | RV-07 / RV-10: on a non-2xx answer other than 503, the client calls `await response.json()` and casts the result to `{ errors: ApiErrorItem[] }` with no checks. A body that is not JSON (an HTML 502/504 page from CloudFront or the ALB, a WAF 403 page, an empty body) makes `response.json()` throw a `SyntaxError`, so the caller gets a `SyntaxError`, not the `ApiError` the plan requires (plan T4 item 5: "any other non-2xx parses `{"errors": [...]}` and throws `ApiError`"). A JSON body without an `errors` array produces an `ApiError` whose `errors` is `undefined`, which breaks the `ApiErrorItem[]` type. Fix: in the `!response.ok` branch, wrap the parse in `try`/`catch`. If the body is not JSON, or `errors` is not an array, throw `new ApiError(response.status, [])`. Otherwise throw `new ApiError(response.status, errors)` as now. Keep the 503 and rejected-`fetch` paths unchanged | A missing error path in the one API client that every screen from US08 to US31 relies on. Screens will catch `ApiError` and map `errors[].code` to `errors.<CODE>`, and a `SyntaxError` or an undefined `errors` gets past that handling |
+| 2 | major | reports/handoff/US01a-dev2.md:1 (commit 54404d4) | RV-05 / RV-08: the Dev created and proposed to commit `reports/handoff/US01a-dev2.md`. The plan does not list this file: T5 writes only `AGENTS.md` and `CLAUDE.md`, and section 5 says "Nothing else". In a story run the Dev's handoff is `factory/stories/US01a/round-1/handoff-dev.md` (`.claude/skills/story/SKILL.md`), so the file is a second copy of the handoff, committed to `develop`'s history through the T5 docs commit. Fix: delete `reports/handoff/US01a-dev2.md` from the branch, remove the link to it at the end of `round-<N>/handoff-dev.md`, and put the full proposed-commit details in the round handoff itself. Propose the deletion as its own `docs(US01a): ...` commit, or have the coordinator amend T5 if the skill allows that | A change outside the plan's file list (major under RV-05). The T5 commit also names a file that is not a T5 file |
+
+## Notes
+- RV-09 (accepted deviation): `src/api/app/main.py:23` has `Settings()` with a plain comment and no `# type: ignore[call-arg]`. The plan's fallback assumed mypy would flag the missing argument. With the `pydantic.mypy` plugin loaded it does not, and under `strict` an unused ignore would fail mypy. The handoff explains this. No change needed.
+- RV-10 (accepted): `client.ts` declares `ApiErrorItem` and `StatusOut` as `interface`, where the plan has `type`. This is what `stylisticTypeChecked` (`consistent-type-definitions`) requires, and the shape is the same.
+- RV-10 (minor): `client.ts:70` has the same problem on a 2xx answer whose body is not JSON: it throws a `SyntaxError`. This is rare behind our own API, so a note, not a finding. You could cover it with the fix for finding 1.
+- RV-08 (minor): the Dev's commit bodies give one generic `What:` line each, not the `<file or area>: <change>` lines `.gitmessage` asks for (compare QA's commit 3d414e1).
+- `src/web/src/i18n/index.ts:6` uses top-level `await` for `i18n.init`. It builds with the ES2022 target. Fine as is.
+- Dependencies: pytest prints a Starlette deprecation warning for `httpx` with `TestClient` (it suggests `httpx2`). `httpx==0.28.1` is the pin the plan approved. A later plan can revisit it. It is not a finding.
+- For the security lens: `npm audit` reports 11 moderate findings in dev dependencies (Dev handoff). Log lines look correct: `services/system.py:18` logs only the exception class, and `errors.py:75` logs only method and path.
+- For the infra lens: the Dockerfile matches plan T3 line for line (two stages, final `python:3.13-slim`, `USER 10001:10001` last, no HEALTHCHECK, no secret ARG/ENV). `uvicorn` binds `0.0.0.0` inside the container, as planned.
+- Spot-checked against the code and plan: CNT-AC01 and CNT-AC02 (Dockerfile), F-SYS-01 and F-SYS-02 routes and the 503 `SYSTEM_NOT_READY` path, the four error handlers (US01a-D9), docs off (US01a-D8), Settings fields and defaults (US01a-D6), and the Makefile targets. All match. `package-lock.json` is in step with `package.json`, and every pin is exact and named in plan section 8. No dead code, no `print`, no `TODO`, no `eslint-disable`, no `noqa`, and the only `datetime.now` is in `SystemClock`.
+- `git status --porcelain` in the worktree printed nothing before and after the review.

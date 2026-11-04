@@ -16,3 +16,17 @@
 
 # Package and plugin caches of Codex Dev runs inside a worktree (story skill)
 /.cache/
+
+# API dependencies and generated files
+src/api/.venv/
+__pycache__/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+src/api/build/
+
+# Web dependencies and generated files
+src/web/node_modules/
+src/web/dist/
+*.tsbuildinfo

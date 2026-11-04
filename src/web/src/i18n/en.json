@@ -1,0 +1,12 @@
+{
+  "app": {
+    "title": "CMS",
+    "loading": "Loading..."
+  },
+  "home": {
+    "running": "CMS is running."
+  },
+  "closed": {
+    "message": "CMS is closed. Office hours: Monday to Friday, 09:00-18:00 (ICT)."
+  }
+}

@@ -26,10 +26,9 @@ with Terraform, packaged with Docker and delivered through GitHub Actions.
 
 Install required tools using the Makefile:
 ```bash
-make bootstrap # Installs tfenv, trivy, tflint, drawio
+make bootstrap # Installs tfenv and Terraform from .terraform-version, tflint, trivy, python@3.13, drawio
+make deps      # Creates src/api/.venv and installs the API and web dependencies
 ```
-
-The `Makefile` is still empty: the `bootstrap` and `check` targets are added by the first story (US01a).
 
 Terraform version: specified in `.terraform-version`
 
@@ -50,7 +49,7 @@ modules/                    # Reusable Terraform child modules
 src/
 |-- api/                    # FastAPI backend + Alembic migrations
 |-- web/                    # React frontend
-tests/                      # QA-owned tests: api/, infra/, web/, dev01/ (layout in AGENTS.md)
+tests/                      # QA-owned tests: api/, infra/, web/, image/, dev01/ (layout in AGENTS.md)
 docs/specs/                 # Spec and Basic Design (spec-001.md), function list
 docs/plans/                 # Story plans with the detailed design (<story>.plan.md)
 docs/runbooks/              # Owner procedures: bootstrap, session, alert email (SP1-D2)
