@@ -79,6 +79,7 @@ docs/design/                # Other design documents
 - Backend: S3 with native state locking (`use_lockfile = true`), no DynamoDB table
 - State separation: Uses Terraform workspaces
 - Backend bucket: `cms-terraform-state-store` (bootstrapped once, outside the layers), region ap-southeast-1 (`region = "ap-southeast-1"` in every backend block)
+- Bootstrap (once per account): `scripts/bootstrap_state_bucket.sh`; procedure in `docs/runbooks/bootstrap.md`.
 - AWS profile: `3tier`
 
 ## Common Terraform Commands
